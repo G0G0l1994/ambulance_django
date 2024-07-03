@@ -1,0 +1,14 @@
+{% extends "project/base.html" %}
+
+{% block content %}
+<div class="container col-6">
+    <h1>This is login page</h1>
+    <form method="post" autocomplete="off">
+        {% csrf_token %}
+        {{loginform.as_p}}
+        <button type="submit">Войти</button>
+    </form>
+    <hr>
+</div>
+
+{% endblock %}
