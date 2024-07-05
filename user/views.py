@@ -1,11 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login,logout
-from django.contrib import auth
 
 
 
 from .forms import RegistrationForm, LoginForm
-from .models import CustomUser
+
 
 
 def home(request):
@@ -20,11 +19,7 @@ def custom_login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         form = LoginForm(request,data=request.POST)
-        
-        # print(form.__dict__)
-        # print(form.clean())
-        # print("post")
-        # print(form.is_valid(username,password))
+      
         if form.is_valid():
             print("username and password")
             username = request.POST.get('username')
@@ -55,12 +50,10 @@ def register(request):
     if request.method == "POST":
 
         form = RegistrationForm(request.POST or None)
-        model_custom = CustomUser(data)
-        print(request.POST)
         if form.is_valid():
 
             form.save(request)
-            model_custom.save()
+            form.save_customuser(request)
 
             return redirect("login")
     
