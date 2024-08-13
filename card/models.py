@@ -117,3 +117,11 @@ class Card(models.Model):
     mkb = models.CharField(max_length=100,null=True)
     submit = models.CharField(max_length=100,null=True)
     csrf_token = models.TextField(null=True)
+
+    
+        
+
+
+    class Meta:
+        db_table = "Card"
+    
