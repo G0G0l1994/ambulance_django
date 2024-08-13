@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+   
+  <title>Заполнить карту</title>
+</head>
+<body>
+ 
+  <div class='container-fluid d-flex'>
+    <div class='row'>
+      <div class='d-flex flex-column justify-content-between col-auto  min-vh-100'>
+        <div class='mt-4'>
+          <a class='text-white text-decoration-none d-flex align-items-center justify-content-center' role='button'>
+            <span class='fs-4'>Меню</span>
+          </a>
+          <hr class='text-white'>
+          <ul class='nav nav-pills flex-column mt-2 mt-sm-0' id='menu'>
+            <li class="nav-item my-sm-1 my-2">
+              <a href="#section_general" class="nav-link" area-current='page'>
+                <i class="fa fa-gauge"></i>
+                <span class='ms-2'>Общие сведения</span>
+              </a>
+            </li>
+            <li class="nav-item my-sm-1 my-2">
+              <a href="#section_skin" class="nav-link" area-current='page'>
+                <!--<i class="fas fa-hand-paper-o" aria-hidden="true"></i>-->
+                <span class='ms-2'>Кожные покровы</span>
+              </a>
+            </li>
+            <li class="nav-item my-sm-1 my-2">
+              <a href="#section_breath" class="nav-link" area-current='page'>
+                <span class='ms-2'>Дыхательная система</span>
+              </a>
+            </li>
+            <li class="nav-item my-sm-1 my-2">
+              <a href="#section_heart" class="nav-link" area-current='page'>
+                <span class='ms-2'>Сердечно-сосудистая система</span>
+              </a>
+            </li>
+            <li class="nav-item my-sm-1 my-2">
+              <a href="#section_stomach" class="nav-link" area-current='page'>
+                <span class='ms-2'>Органы пищеварения</span>
+              </a>
+            </li>
+            <li class="nav-item my-sm-1 my-2">
+              <a href="#section_nerves" class="nav-link" area-current='page'>
+                <i class="fa fa-gauge"></i>
+                <span class='ms-2'>Нервная система</span>
+              </a>
+            </li>
+            <li class="nav-item my-sm-1 my-2">
+              <a href="#section_urogenital" class="nav-link" area-current='page'>
+                <i class="fa fa-gauge"></i>
+                <span class='ms-2'>Мочеполовая система</span>
+              </a>
+            </li>
+            <li class="nav-item my-sm-1 my-2">
+              <a href="#section_local_status" class="nav-link" area-current='page'>
+                <i class="fa fa-gauge"></i>
+                <span class='ms-2'>Локальный статус</span>
+              </a>
+            </li>
+            <li class="nav-item my-sm-1 my-2">
+              <a href="#section_help" class="nav-link" area-current='page'>
+                <i class="fa fa-gauge"></i>
+                <span class='ms-2'>Оказанная помощь</span>
+              </a>
+            </li>
+            <li class="nav-item my-sm-1 my-2">
+              <a href="#section_diagnosis" class="nav-link" area-current='page'>
+                <i class="fa fa-gauge"></i>
+                <span class='ms-2'>Диагноз</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <div class="dropdown open">
+            <a class="btn btn-secondary border-none outline-none text-white dropdown-toggle" type="button" id="triggerId" data-bs-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                  <i class="fa fa-user"></i><span class='ms-1'>Профиль</span>
+                </a>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+              <a class="dropdown-item" href="#">Настройки</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="main">
+      <section id="section_general">
+      <h2>Общие сведения</h2>
+        <form method="POST" class="patien-form">
+          {{ cardform.hidden_tag }}
+          {{ cardform.csrf_token }}
+          <div class="form-group mb-3">
+            {{ cardform.zhaloby }}
+          </div>
+          <div class="form-group mb-3">
+            {{ cardform.anamnesis }}
+          </div>
+
+          <div class="form-group mb-3">
+            {{cardform.general_assessment.label_tag}}
+            {{ cardform.general_assessment }}
+          </div>
+
+          <div class="form-group mb-3">
+            {{cardform.сonsciousness.label_tag}}
+            {{ cardform.сonsciousness }}
+          </div>
+
+          <div class="form-group mb-3">
+            {{cardform.glasgow_scale.label_tag}}
+            {{ cardform.glasgow_scale }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.body_position.label_tag}}
+            {{ cardform.body_position }}
+          </div>
+        
+          <h2>Показатели до оказания помощи</h2>
+          <div class="form-group mb-3">
+            {{cardform.temperature_before.label_tag}}
+            {{ cardform.temperature_before }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.saturation_before.label_tag}}
+            {{ cardform.saturation_before }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.respiratory_rate_before.label_tag}}
+            {{ cardform.respiratory_rate_before }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.heartbite_before.label_tag}}
+            {{ cardform.heartbite_before }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.pulse_before.label_tag}}
+            {{ cardform.pulse_before }}
+          </div>
+
+          <div class="form-group mb-3">
+            {{cardform.blood_pressure_systolic_before.label_tag}}
+            {{ cardform.blood_pressure_systolic_before }}
+          </div>
+
+          <div class="form-group mb-3">
+            {{cardform.blood_pressure_diastolic_before.label_tag}}
+            {{ cardform.blood_pressure_diastolic_before }}
+          </div>
+
+          <div class="form-group mb-3">
+            {{cardform.normal_blood_pressure_systolic.label_tag}}
+            {{ cardform.normal_blood_pressure_systolic }}
+          </div>
+
+          <div class="form-group mb-3">
+            {{cardform.normal_blood_pressure_diastolic.label_tag}}
+            {{ cardform.normal_blood_pressure_diastolic }}
+          </div>
+
+          <div class="form-group mb-3">
+            {{cardform.blood_glucose_before.label_tag}}
+            {{ cardform.blood_glucose_before }}
+          </div>
+
+      </section>
+      <section id="section_skin">
+      <h2>Кожные покровы</h2>
+        <div class="form-group mb-3">
+          {{cardform.dry_skin.label_tag}}
+          {{ cardform.dry_skin }}
+        </div>
+
+        <div class="form-group mb-3">
+          {{cardform.color_skin.label_tag}}
+          {{ cardform.color_skin }}
+        </div>
+
+        <div class="form-group mb-3">
+          {{cardform.jaundice.label_tag}}
+          {{ cardform.jaundice }}
+        </div>
+        <div class="form-group mb-3">
+          {{cardform.rash.label_tag}}
+          {{ cardform.rash }}
+        </div>
+
+        <div class="form-group mb-3">
+          {{cardform.throat.label_tag}}
+          {{ cardform.throat }}
+        </div>
+
+        <div class="form-group mb-3">
+          {{cardform.tonsils.label_tag}}
+          {{ cardform.tonsils }}
+        </div>
+
+        <div class="form-group mb-3">
+          {{cardform.lymph_nodes.label_tag}}
+          {{ cardform.lymph_nodes }}
+        </div>
+
+        <div class="form-group mb-3">
+          {{cardform.swelling.label_tag}}
+          {{ cardform.swelling }}
+        </div>
+
+      
+      </section>
+      <section id="section_breath">
+      <h2>Дыхательная система</h2>
+    
+        <div class="form-group mb-3">
+          {{cardform.respiratory_type.label_tag}}
+          {{ cardform.respiratory_type }}
+        </div>
+
+        <div class="form-group mb-3">
+          {{cardform.wheezing.label_tag}}
+          {{ cardform.wheezing }}
+        </div>
+
+        
+        <div class="form-group mb-3">
+          {{cardform.wheezing_localisation.label_tag}}
+          {{ cardform.wheezing_localisation }}
+        </div>
+
+        
+        <div class="form-group mb-3">
+          {{cardform.dyspnea.label_tag}}
+          {{ cardform.dyspnea }}
+        </div>
+
+    
+      </section>
+      <section id="section_heart">
+      <h2>Сердечно сосудистая система</h2>
+        <div class="form-group mb-3">
+          {{cardform.tone_of_heart.label_tag}}
+          {{ cardform.tone_of_heart }}
+        </div>
+
+        <div class="form-group mb-3">
+          {{cardform.murmur.label_tag}}
+          {{ cardform.murmur }}
+        </div>
+
+        <div class="form-group mb-3">
+          {{cardform.characteristic_pulse.label_tag}}
+          {{ cardform.characteristic_pulse }}
+        </div>
+        
+        <div class="form-group mb-3">
+          {{cardform.rhythmic_pulse.label_tag}}
+          {{ cardform.rhythmic_pulse }}
+        </div>
+        
+        <div class="form-group mb-3">
+          {{cardform.rhythmic_tone.label_tag}}
+          {{ cardform.rhythmic_tone }}
+        </div>
+        
+        <div class="form-group mb-3 checkbox">
+          {{cardform.heart_rate_deficit.label_tag}}
+          {{ cardform.heart_rate_deficit }}
+        </div>
+
+        <div class="form-group mb-3">
+          {{cardform.heart_tone_accent.label_tag}}
+          {{ cardform.heart_tone_accent }}
+        </div>
+
+      </section>
+      <section id="section_stomach">
+        <h2>Органы пищеварения</h2>
+        <div class="form-group mb-3 checkbox">
+          {{cardform.liver.label_tag}}
+          {{ cardform.liver }}
+        </div>
+          <div class="form-group mb-3">
+            {{cardform.pain_stomach.label_tag}}
+            {{ cardform.pain_stomach }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.characteristic_stomach.label_tag}}
+            {{ cardform.characteristic_stomach }}
+          </div>
+          <div class="form-group mb-3 checkbox">
+            {{cardform.involved_in_the_act_of_breathing.label_tag}}
+            {{ cardform.involved_in_the_act_of_breathing }}
+          </div>
+          <div class="form-group mb-3 checkbox">
+            {{cardform.is_shchetkin_blumberg.label_tag}}
+            {{ cardform.is_shchetkin_blumberg }}
+          </div>
+          <div class="form-group mb-3 checkbox">
+            {{cardform.is_voskresensky.label_tag}}
+            {{ cardform.is_voskresensky }}
+          </div>
+          <div class="form-group mb-3 checkbox">
+            {{cardform.is_ortner.label_tag}}
+            {{ cardform.is_ortner }}
+          </div>
+          <div class="form-group mb-3 checkbox">
+            {{cardform.is_rovzinga.label_tag}}
+            {{ cardform.is_rovzinga }}
+          </div>
+          <div class="form-group mb-3 checkbox">
+            {{cardform.is_pasternatsky.label_tag}}
+            {{ cardform.is_pasternatsky }}
+          </div>
+          <div class="form-group mb-3 checkbox">
+            {{cardform.is_sitkovsky.label_tag}}
+            {{ cardform.is_sitkovsky }}
+          </div>
+          <div class="form-group mb-3 checkbox">
+            {{cardform.is_obraztsova.label_tag}}
+            {{ cardform.is_obraztsova }}
+          </div>
+          <div class="form-group mb-3 checkbox">
+            {{cardform.is_murphy.label_tag}}
+            {{ cardform.is_murphy }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.formed_type_stool.label_tag}}
+            {{ cardform.formed_type_stool }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.regular_stool.label_tag}}
+            {{ cardform.regular_stool }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.rate_stool.label_tag}}
+            {{ cardform.rate_stool }}
+          </div>
+         
+      </section>
+      <section id="section_nerves">
+        <h2>Нервная система</h2>
+          <div class="form-group mb-3">
+            {{cardform.behaviour.label_tag}}
+            {{ cardform.behaviour }}
+          </div>
+          <div class="form-group mb-3 checkbox">
+            {{cardform.none_symptoms.label_tag}}
+            {{ cardform.none_symptoms }}
+          </div>
+          <div class="form-group mb-3 checkbox">
+            {{cardform.nuchal_rigidity.label_tag}}
+            {{ cardform.nuchal_rigidity }}
+          </div>
+          <div class="form-group mb-3 checkbox">
+            {{cardform.is_kernig_symptom.label_tag}}
+            {{ cardform.is_kernig_symptom }}
+          </div>
+          <div class="form-group mb-3 checkbox">
+            {{cardform.is_brudzinski_symptom.label_tag}}
+            {{ cardform.is_brudzinski_symptom }}
+          </div>
+          <div class="form-group mb-3 checkbox">
+            {{cardform.reaction_to_light.label_tag}}
+            {{ cardform.reaction_to_light }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.pupils_of_the_eyes.label_tag}}
+            {{ cardform.pupils_of_the_eyes }}
+          </div>
+          <div class="form-group mb-3 checkbox">
+            {{cardform.anisocoria.label_tag}}
+            {{ cardform.anisocoria }}
+          </div>
+          <div class="form-group mb-3 checkbox">
+            {{cardform.nystagmus.label_tag}}
+            {{ cardform.nystagmus }}
+          </div>
+          <div class="form-group mb-3 checkbox">
+            {{cardform.focal_signs.label_tag}}
+            {{ cardform.focal_signs }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.speech.label_tag}}
+            {{ cardform.speech }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.paralysis.label_tag}}
+            {{ cardform.paralysis }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.sensitive.label_tag}}
+            {{ cardform.sensitive }}
+          </div>
+      </section>
+      <section id="section_urogenital">
+        <h2>Мочеполовая система</h2>
+      <!--   <div class="form-group mb-3">
+          {{cardform.painless_urination.label_tag}}
+          {{ cardform.painless_urination }}
+        </div> -->
+          <div class="form-group mb-3">
+            {{cardform.characteristic_urination.label_tag}}
+            {{ cardform.characteristic_urination }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.kidney_punch.label_tag}}
+            {{ cardform.kidney_punch }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.painless_urination.label_tag}}
+            {{ cardform.painless_urination }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.characteristic_urine.label_tag}}
+            {{ cardform.characteristic_urine }}
+          </div>
+
+      </section>
+      <section id="section_local_status">
+        <h2>Локальный статус</h2>
+          <div class="form-group mb-3">
+            {{cardform.status_localis.label_tag}}
+            {{ cardform.status_localis }}
+          </div>
+        
+      </section>
+      <section id="section_help">
+        <h2>Оказанная помощь</h2>
+          <div class="form-group mb-3">
+            {{cardform.ecg_before.label_tag}}
+            {{ cardform.ecg_before }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.ecg_after.label_tag}}
+            {{ cardform.ecg_after }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.aid.label_tag}}
+            {{ cardform.aid }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.temperature_after.label_tag}}
+            {{ cardform.temperature_after }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.respiratory_rate_after.label_tag}}
+            {{ cardform.respiratory_rate_after }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.saturation_after.label_tag}}
+            {{ cardform.saturation_after }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.heartbite_after.label_tag}}
+            {{ cardform.heartbite_after }}
+          </div>
+          <div class="form-group mb-3">
+            {{cardform.pulse_after.label_tag}}
+            {{ cardform.pulse_after }}
+          </div>
+
+          <div class="form-group mb-3">
+            {{cardform.blood_pressure_systolic_after.label_tag}}
+            {{ cardform.blood_pressure_systolic_after }}
+          </div>
+
+          <div class="form-group mb-3">
+            {{cardform.blood_pressure_diastolic_after.label_tag}}
+            {{ cardform.blood_pressure_diastolic_after }}
+          </div>
+
+          <div class="form-group mb-3">
+            {{cardform.blood_glucose_after.label_tag}}
+            {{ cardform.blood_glucose_after }}
+          </div>
+      </section>
+      <section id="section_diagnosis">
+        <h2>Диагноз</h2>
+          <div class="form-group mb-3">
+            {{cardform.diagnosis.label_tag}}
+            {{ cardform.diagnosis }}
+            
+          </div>
+          
+          <label for="exampleDataList" class="form-label">Код МКБ-10</label>
+          <input class="form-control" list="datalistOptions" id="exampleDataList" name="mkb" placeholder="Введите для поиска...">
+          <datalist id="datalistOptions">
+            {% for code in mkb_code%}
+
+              <li><option value="{{code.code}}"></li>
+              
+            {%endfor%}
+            
+          </datalist>
+          
+          
+          
+      </section>
+    </form>
+      
+    </div>
+  
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+</div>
+
+</body>
+</html>
