@@ -19,8 +19,11 @@ class RegistrationForm(UserCreationForm):
 
     def save_customuser(self,request=None):
         custom_model = CustomUser()
+        print(request.POST)
         for key,item in request.POST.items():
+            print(key,"is",item)
             if hasattr(custom_model,key):
+                print(key,"in custom user")
                 setattr(custom_model,key,item)
         custom_model.save()
         print("save CustomUser")

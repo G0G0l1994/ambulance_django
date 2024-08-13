@@ -7,9 +7,12 @@
   <title>Main Page</title>
 </head>
 <body>
+    {% include "project/menu_bar.html" %}
+    <div>
     {% block content %}
     
     {% endblock %}
+    </div>
   <!-- <script src="js/bootstrap.bundle.min.js"></script> -->
 </body>
 </html>
