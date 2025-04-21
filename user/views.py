@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login,logout
 from django.core.exceptions import PermissionDenied
+from django.http import JsonResponse
+from django.conf import settings
 
 
 
 from .forms import RegistrationForm, LoginForm
-from .services.auth import login_user
+from .services.auth import user_auth, create_jwt_token
 from .services.role import get_role_redirect
 
 
@@ -17,32 +19,50 @@ def home(request):
 
 
 def custom_login(request):
-
-    form = LoginForm()
+    if request.method == 'GET':
+        return render(request, "project/login.html", {"loginform": LoginForm()})
+    
     if request.method == "POST":
         form = LoginForm(request,data=request.POST)
-        if form.is_valid():
-            try:
-                redirect_to = login_user(
-                    request,
-                    username=form.cleaned_data['username'],
-                    password=form.cleaned_data['password'])
+        if  not form.is_valid():
+            return render(request, "project/login.html", {"loginform": form})
+    try:
+        user = user_auth(
+            request,
+            username=form.cleaned_data['username'],
+            password=form.cleaned_data['password'])
+        
+        token = create_jwt_token(user)
 
-                return redirect(redirect_to)
-            except PermissionDenied as e:
-                form.add_error(None,str(e))
+        login(request,user)
+
+        response = redirect(get_role_redirect(user.profile))
+        response.set_cookie(
+             'access_token',
+             token,
+             httponly=True,
+             secure=not settings.DEBUG,
+             samesite='Strict'
+        )
+        return response
+
+    except PermissionDenied as e:
+        form.add_error(None,str(e))
+        return render(request, "project/login.html", {"loginform": form})
                 
 
-
-    
-    return render(request,"project/login.html", {"loginform": form})
 
 
 def logout_user(request):
 
+    if request.user.is_authenticated:
+        request.user.profile.invalidate_all_session()
+    
+    response = redirect('home')
+    response.delete_cookie('access_token')
     logout(request)
 
-    return redirect('home')
+    return response
 
 
 

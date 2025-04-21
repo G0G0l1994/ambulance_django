@@ -32,7 +32,7 @@ class Profile(models.Model):
                                      unique=True,
                                      verbose_name='Идентификатор сессии'
                                      )
-    session_expire = models.DateTimeField(default= now, 
+    session_expire = models.DateTimeField(default=lambda:now()+timedelta(days=30), 
                                           verbose_name='Срок действия сессии'
                                           )
 
