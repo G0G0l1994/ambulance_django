@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login,logout
+from django.core.exceptions import PermissionDenied
 
 
 
 from .forms import RegistrationForm, LoginForm
-from .models import CustomUser
+from .services.auth import login_user
+from .services.role import get_role_redirect
 
 
 
@@ -18,34 +20,22 @@ def custom_login(request):
 
     form = LoginForm()
     if request.method == "POST":
-        username = request.POST.get('username')
-        password = request.POST.get('password')
         form = LoginForm(request,data=request.POST)
-        model = CustomUser()
-      
         if form.is_valid():
-            print("username and password")
-            username = request.POST.get('username')
-            password = request.POST.get('password')
+            try:
+                redirect_to = login_user(
+                    request,
+                    username=form.cleaned_data['username'],
+                    password=form.cleaned_data['password'])
 
-            user = authenticate(request,username=username,
-                                password=password)
-            print("auth in user")
+                return redirect(redirect_to)
+            except PermissionDenied as e:
+                form.add_error(None,str(e))
+                
 
-            if user is not None:
-                user_custom = CustomUser.objects.get(username=username)
-                login(request,user)
-                print(user)
-                if user_custom.role == "doctors":
-                    return redirect('doctors')
-                else:
-                    return redirect('dispatcher')
-                # return redirect('home')
-    
-    context = {"loginform": form}
 
     
-    return render(request,"project/login.html", context=context)
+    return render(request,"project/login.html", {"loginform": form})
 
 
 def logout_user(request):

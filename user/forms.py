@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.forms.widgets import TextInput,PasswordInput
 
-from user.models import CustomUser
+from user.models import Profile
 
     
 
@@ -18,7 +18,7 @@ class RegistrationForm(UserCreationForm):
     password2=forms.CharField(label="Подтвердите пароль", widget=forms.PasswordInput())
 
     def save_customuser(self,request=None):
-        custom_model = CustomUser()
+        custom_model = Profile()
         print(request.POST)
         for key,item in request.POST.items():
             print(key,"is",item)
