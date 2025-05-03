@@ -1,4 +1,3 @@
-import time
 
 from django.test import TestCase, RequestFactory
 from django.contrib.auth.models import User
@@ -8,9 +7,7 @@ from django.utils import timezone
 
 import jwt
 
-from .models import Profile
 from .services.auth import create_jwt_token, validate_jwt_token, user_auth
-from .services.role import get_role_redirect
 
 
 class ProfileSessionsTest(TestCase):

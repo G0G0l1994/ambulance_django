@@ -5,15 +5,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('user', '0004_alter_profile_session_expire'),
+        ("user", "0004_alter_profile_session_expire"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='profile',
-            name='session_expire',
-            field=models.DateTimeField(default=django.utils.timezone.now, verbose_name='Срок действия сессии'),
+            model_name="profile",
+            name="session_expire",
+            field=models.DateTimeField(default=django.utils.timezone.now, verbose_name="Срок действия сессии"),
         ),
     ]

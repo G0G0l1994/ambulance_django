@@ -4,28 +4,26 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='CustomUser',
+            name="CustomUser",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
-                ('username', models.CharField(max_length=50, unique=True)),
-                ('first_name', models.CharField(max_length=50, null=True)),
-                ('surname', models.CharField(max_length=50, null=True)),
-                ('last_name', models.CharField(max_length=50, null=True)),
-                ('password', models.CharField(max_length=50, null=True)),
-                ('role', models.CharField(max_length=20, null=True)),
-                ('email', models.EmailField(max_length=50, unique=True)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("last_login", models.DateTimeField(blank=True, null=True, verbose_name="last login")),
+                ("username", models.CharField(max_length=50, unique=True)),
+                ("first_name", models.CharField(max_length=50, null=True)),
+                ("surname", models.CharField(max_length=50, null=True)),
+                ("last_name", models.CharField(max_length=50, null=True)),
+                ("password", models.CharField(max_length=50, null=True)),
+                ("role", models.CharField(max_length=20, null=True)),
+                ("email", models.EmailField(max_length=50, unique=True)),
             ],
             options={
-                'db_table': 'CustomUser',
+                "db_table": "CustomUser",
             },
         ),
     ]
