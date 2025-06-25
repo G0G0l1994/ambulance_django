@@ -20,7 +20,10 @@ class RegistrationForm(UserCreationForm):
         user = super().save(commit=False)
         if commit:
             user.save()
-            Profile.objects.create()
+            Profile.objects.create(user=user,
+                surname = self.cleaned_data['surname'],
+                role = self.cleaned_data['role'])
+
 
     class Meta:
         model = User

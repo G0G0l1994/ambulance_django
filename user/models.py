@@ -14,7 +14,7 @@ class Profile(models.Model):
     ROLE_CHOICE = [("doctor", "Врач"), ("dispatcher", "Диспетчер")]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    surname = models.CharField(max_length=256, blank=True, verbose_name="Отчество")
+    surname = models.CharField(max_length=256, blank=False, verbose_name="Отчество")
     role = models.CharField(max_length=20, choices=ROLE_CHOICE, default="doctor", verbose_name="Роль")
     uuid_session = models.UUIDField(
         default=uuid.uuid4, editable=False, unique=True, verbose_name="Идентификатор сессии"
@@ -44,16 +44,16 @@ class Profile(models.Model):
             return f"{self.user.username} ({self.get_role_display()})"
 
 
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        try:
-            Profile.objects.create(user=instance)
-            logger.info(f"{instance.username} created!")
-        except IntegrityError as e:
-            logger.error(f"Profile creation failed for user {instance.pk} error: {str(e)}")
+# @receiver(post_save, sender=User)
+# def create_user_profile(sender, instance, created, **kwargs):
+#     if created:
+#         try:
+#             Profile.objects.create(user=instance)
+#             logger.info(f"{instance.username} created!")
+#         except IntegrityError as e:
+#             logger.error(f"Profile creation failed for user {instance.pk} error: {str(e)}")
 
 
-@receiver(post_save, sender=User)
-def save_user(sender, instance, **kwargs):
-    instance.profile.save()
+# @receiver(post_save, sender=User)
+# def save_user(sender, instance, **kwargs):
+#     instance.profile.save()

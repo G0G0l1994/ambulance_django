@@ -35,3 +35,5 @@ def user_auth(request, username: str, password: str):
     if not user.profile.uuid_is_active:
         user.profile.refresh_session()
     return user
+
+

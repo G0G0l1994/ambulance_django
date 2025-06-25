@@ -55,7 +55,7 @@ def register(request):
     if request.method == "POST":
         form = RegistrationForm(request.POST or None)
         if form.is_valid():
-            form.save_customuser(request)
+            # form.save_customuser(request)
             form.save(request)
 
             return redirect("login")
