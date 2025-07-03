@@ -5,8 +5,8 @@ from user.models import Profile
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    surname: str = serializers.CharField(write_only=True)
-    role: str = serializers.ChoiceField(choices=Profile.ROLE_CHOICE, write_only=True)
+    surname = serializers.CharField(write_only=True)
+    role = serializers.ChoiceField(choices=Profile.ROLE_CHOICE, write_only=True)
 
     class Meta:
         model = User
@@ -22,7 +22,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Email already exist")
         return value
 
-    def validete_password(self, attrs):
+    def validate_password(self, attrs):
         if attrs["password"] != attrs["password2"]:
             raise serializers.ValidationError({"password": "Password fields didn't match"})
         return attrs

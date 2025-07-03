@@ -7,6 +7,8 @@ from django.utils.timezone import now, timedelta
 
 logger = logging.getLogger(__name__)
 
+def get_expire_time():
+    return now() + timedelta(days=30)
 
 class Profile(models.Model):
     ROLE_CHOICE = [("doctor", "Врач"), ("dispatcher", "Диспетчер")]
@@ -18,7 +20,7 @@ class Profile(models.Model):
         default=uuid.uuid4, editable=False, unique=True, verbose_name="Идентификатор сессии"
     )
     session_expire = models.DateTimeField(
-        default=lambda: now() + timedelta(days=30), verbose_name="Срок действия сессии"
+        default= get_expire_time(), verbose_name="Срок действия сессии"
     )
 
     @property

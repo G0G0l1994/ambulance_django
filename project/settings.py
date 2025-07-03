@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "user",
     "card",
     "rest_framework",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -50,6 +51,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware"
 ]
 
 ROOT_URLCONF = "project.urls"
@@ -129,3 +131,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # JWT token settings
 JWT_COOKIE_NAME = "access_token"
 JWT_EXPIRATION_HOURS = 24
+
+REST_FRAMEWORK = {'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny']}
+
+CORS_ORIGIN_ALLOW_ALL = True
