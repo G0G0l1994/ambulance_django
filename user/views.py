@@ -4,7 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect, render
 
 from .forms import LoginForm, RegistrationForm
-from .services.auth import create_jwt_token, user_auth
+from .services.auth import create_jwt_token
 from .services.role import get_role_redirect
 
 
@@ -14,28 +14,28 @@ def home(request):
     return render(request, "project/main.html")
 
 
-def custom_login(request):
-    if request.method == "GET":
-        return render(request, "project/login.html", {"loginform": LoginForm()})
+# def custom_login(request):
+#     if request.method == "GET":
+#         return render(request, "project/login.html", {"loginform": LoginForm()})
 
-    if request.method == "POST":
-        form = LoginForm(request, data=request.POST)
-        if not form.is_valid():
-            return render(request, "project/login.html", {"loginform": form})
-    try:
-        user = user_auth(request, username=form.cleaned_data["username"], password=form.cleaned_data["password"])
+#     if request.method == "POST":
+#         form = LoginForm(request, data=request.POST)
+#         if not form.is_valid():
+#             return render(request, "project/login.html", {"loginform": form})
+#     try:
+#         user = user_auth(request, username=form.cleaned_data["username"], password=form.cleaned_data["password"])
 
-        token = create_jwt_token(user)
+#         token = create_jwt_token(user)
 
-        login(request, user)
+#         login(request, user)
 
-        response = redirect(get_role_redirect(user.profile))
-        response.set_cookie("access_token", token, httponly=True, secure=not settings.DEBUG, samesite="Strict")
-        return response
+#         response = redirect(get_role_redirect(user.profile))
+#         response.set_cookie("access_token", token, httponly=True, secure=not settings.DEBUG, samesite="Strict")
+#         return response
 
-    except PermissionDenied as e:
-        form.add_error(None, str(e))
-        return render(request, "project/login.html", {"loginform": form})
+#     except PermissionDenied as e:
+#         form.add_error(None, str(e))
+#         return render(request, "project/login.html", {"loginform": form})
 
 
 def logout_user(request):

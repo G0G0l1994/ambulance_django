@@ -132,6 +132,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 JWT_COOKIE_NAME = "access_token"
 JWT_EXPIRATION_HOURS = 24
 
-REST_FRAMEWORK = {'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny']}
+REST_FRAMEWORK = {'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated'], 'DEFAULT_AUTHENTICATION_CLASSES': [
+        'user.services.auth.CustomJWTAuth',
+        'rest_framework.authentication.SessionAuthentication',  # для админки и Browsable API
+    ],}
 
 CORS_ORIGIN_ALLOW_ALL = True
