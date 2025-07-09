@@ -7,10 +7,11 @@ from user.models import Profile
 class UserCreateSerializer(serializers.ModelSerializer):
     surname = serializers.CharField(write_only=True)
     role = serializers.ChoiceField(choices=Profile.ROLE_CHOICE, write_only=True)
+    password2 = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ["id", "username", "first_name", "last_name", "surname", "role", "password", "email"]
+        fields = ["id", "username", "first_name", "last_name", "surname", "role", "password", "password2", "email"]
         extra_kwargs = {
             "email": {"required": True},
             "first_name": {"required": True},
@@ -22,7 +23,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Email already exist")
         return value
 
-    def validate_password(self, attrs):
+    def validate(self, attrs):
         if attrs["password"] != attrs["password2"]:
             raise serializers.ValidationError({"password": "Password fields didn't match"})
         return attrs
@@ -30,6 +31,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         role = validated_data.pop("role")
         surname = validated_data.pop("surname")
+        validated_data.pop('password2')
         user = User.objects.create_user(**validated_data)
         Profile.objects.create(user=user, surname=surname, role=role)
         return user

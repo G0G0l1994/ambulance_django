@@ -1,40 +1,21 @@
-import axios from "axios";
+// import axios from "axios";
 import React from "react";
 
-class App extends React.Component {
-  state = { details: [] };
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ChakraProvider } from "@chakra-ui/react";
 
-  componentDidMount() {
-    let data;
-    axios
-      .get("http://127.0.0.1:8000/api/users/")
-      .then((res) => {
-        data = res.data;
-        this.setState({
-          details: data,
-        });
-      })
-      .catch((err) => {});
-  }
-  render() {
-    return (
-      <div>
-        <header> Data Generaded from Django</header>
-        <hr></hr>
-        {this.state.details.map((output, id) => (
-          <div key={id}>
-            <div class='users'>
-              <h2>
-                {id}
-                {output.username}
-              </h2>
-              <h3>{output.role}</h3>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
+import Login from "./routes/login";
+
+function App() {
+  return (
+    <ChakraProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </Router>
+    </ChakraProvider>
+  );
 }
 
 export default App;

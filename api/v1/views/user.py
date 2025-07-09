@@ -2,8 +2,8 @@ import jwt
 
 from django.contrib.auth import authenticate
 
-from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework import serializers, status
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
@@ -12,7 +12,7 @@ from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 from api.v1.serializers.user import UserCreateSerializer
 from project import settings
 from user.models import Profile, RefreshToken
-from user.services.auth import create_jwt_token
+from user.services.auth import create_jwt_token, create_refresh_token
 
 
 class UserAPIView(APIView):
@@ -39,12 +39,21 @@ class UserAPIView(APIView):
 
         return Response(output)
 
+    
+
+class RegistrationAPIVeiw(APIView):
+
+    permission_classes = [AllowAny]
+    serializer_class = UserCreateSerializer
+    parser_classes = [FormParser, MultiPartParser, JSONParser]
+
     def post(self,request, format = None):
         serializer = self.serializer_class(data = request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LoginAPIView(APIView):
 
@@ -56,24 +65,56 @@ class LoginAPIView(APIView):
         if user is not None and user.is_active and hasattr(user,'profile'):
             if not user.profile.uuid_is_active:
                 user.profile.refresh_session()
-            token = create_jwt_token(user)
-            res = Response({"success": True, "access": token},status=status.HTTP_200_OK)
+            access_token = create_jwt_token(user)
+            refresh_token = create_refresh_token(user)
+            res = Response({"success": True, "access_token": access_token, "refresh_token": refresh_token},status=status.HTTP_200_OK)
             
             res.set_cookie(key="access_token",
-            value=token,
+            value=access_token,
             httponly=True,
-            secure=not settings.DEBUG,
-            samesite='Lax',
+            secure=True,
+            samesite='None',
+            path='/')
+            res.set_cookie(key="refresh_token",
+            value=refresh_token,
+            httponly=True,
+            secure=True,
+            samesite='None',
             path='/')
             return res
         return Response({"success": False,"detail": "Invalid user data"}, status=status.HTTP_401_UNAUTHORIZED)
 
+class LogoutAPIView(APIView):
+
+    permission_classes =[AllowAny]
+    def post(self,request):
+        try:
+            refresh_token = request.COOKIES.get('refresh_token')
+            if refresh_token:
+                try:
+                    payload = jwt.decode(refresh_token, key = settings.SECRET_KEY, algorithms=['HS256'])
+                    jti = payload.get('jti')
+                    if jti:
+                        RefreshToken.objects.filter(jti=jti).update(revoked=True)
+                except Exception:
+                    pass
+            response = Response({'success': True})
+            response.delete_cookie('refresh_token', path='/', samesite='None')
+            response.delete_cookie('access_token', path='/', samesite='None')
+            return response
+        except Exception as e:
+            print(f"Error is {e}")
+            return Response({'detail': 'Something wrong', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 class RefreshTokenObtain(APIView):
 
     permission_classes = [AllowAny]
-    
+
     def post(self,request):
-        token = request.data.get('refresh')
+        token = request.data.get('refresh_token')
         if not token:
             return Response({'detail': 'Refresh token required'}, status=status.HTTP_400_BAD_REQUEST)
         try:
@@ -99,5 +140,12 @@ class RefreshTokenObtain(APIView):
         access_token = create_jwt_token(user)
 
         response = Response({'access': access_token}, status=status.HTTP_200_OK)
-        response.set_cookie("access_token", access_token, httponly=True, secure=not settings.DEBUG, samesite="Lax")
+        response.set_cookie("access_token", access_token, httponly=True, secure=True, samesite="None")
         return response
+
+class IsAuthenticatedAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request):
+
+        return Response({'is_authenticated': request.user.is_authenticated})

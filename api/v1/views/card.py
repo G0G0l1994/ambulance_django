@@ -21,6 +21,7 @@ class CardAPIView(APIView):
         user = request.user
         cards = Card.objects.filter(doctor_id = user.id)
         serializer = self.serializer_class(cards, many=True)
+        print(user.is_authenticated)
         return Response(serializer.data,status=status.HTTP_200_OK)
         
         

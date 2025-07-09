@@ -137,4 +137,9 @@ REST_FRAMEWORK = {'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsA
         'rest_framework.authentication.SessionAuthentication',  # для админки и Browsable API
     ],}
 
-CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+
+]
+CORS_ALLOW_CREDENTIALS = True
