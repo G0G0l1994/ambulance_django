@@ -1,6 +1,7 @@
 import jwt
 
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import AnonymousUser
 
 from rest_framework import serializers, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -48,11 +49,15 @@ class RegistrationAPIVeiw(APIView):
     parser_classes = [FormParser, MultiPartParser, JSONParser]
 
     def post(self,request, format = None):
-        serializer = self.serializer_class(data = request.data)
+        print(f"Registration request data: {request.data}")
+        
+        serializer = self.serializer_class(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            print(f"Serializer errors: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginAPIView(APIView):
@@ -69,18 +74,25 @@ class LoginAPIView(APIView):
             refresh_token = create_refresh_token(user)
             res = Response({"success": True, "access_token": access_token, "refresh_token": refresh_token},status=status.HTTP_200_OK)
             
+            print(f"Setting cookies for user {user.username}")
+            print(f"Access token: {access_token[:20]}...")
+            
             res.set_cookie(key="access_token",
             value=access_token,
-            httponly=True,
+            httponly=False,  # Временно отключаем для отладки
             secure=False,
-            samesite='None',
-            path='/')
+            samesite='Lax',
+            path='/',
+            domain=None)  # Позволяем браузеру самому определить домен
             res.set_cookie(key="refresh_token",
             value=refresh_token,
-            httponly=True,
+            httponly=False,  # Временно отключаем для отладки
             secure=False,
-            samesite='None',
-            path='/')
+            samesite='Lax',
+            path='/',
+            domain=None)  # Позволяем браузеру самому определить домен
+            
+            print("Cookies set successfully")
             return res
         return Response({"success": False,"detail": "Invalid user data"}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -99,8 +111,8 @@ class LogoutAPIView(APIView):
                 except Exception:
                     pass
             response = Response({'success': True})
-            response.delete_cookie('refresh_token', path='/', samesite='None')
-            response.delete_cookie('access_token', path='/', samesite='None')
+            response.delete_cookie('refresh_token', path='/', samesite='Lax', domain=None)
+            response.delete_cookie('access_token', path='/', samesite='Lax', domain=None)
             return response
         except Exception as e:
             print(f"Error is {e}")
@@ -140,12 +152,72 @@ class RefreshTokenObtain(APIView):
         access_token = create_jwt_token(user)
 
         response = Response({'access': access_token}, status=status.HTTP_200_OK)
-        response.set_cookie("access_token", access_token, httponly=True, secure=False, samesite="None")
+        response.set_cookie("access_token", access_token, httponly=False, secure=False, samesite="Lax", domain=None)
         return response
 
 class IsAuthenticatedAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
-    def post(self,request):
-
-        return Response({'is_authenticated': request.user.is_authenticated})
+    def post(self, request):
+        # Проверяем наличие access_token в cookie
+        access_token = request.COOKIES.get('access_token')
+        
+        print(f"All cookies: {dict(request.COOKIES)}")
+        print(f"Checking authentication. Access token: {'present' if access_token else 'missing'}")
+        
+        if not access_token:
+            print("No access token found")
+            return Response({'is_authenticated': False})
+        
+        try:
+            # Декодируем JWT токен
+            payload = jwt.decode(access_token, key=settings.SECRET_KEY, algorithms=['HS256'])
+            user_id = payload.get('user_id')
+            uuid_session = payload.get('uuid_session')
+            
+            print(f"Token payload - user_id: {user_id}, uuid_session: {uuid_session}")
+            
+            if not user_id:
+                print("No user_id in token")
+                return Response({'is_authenticated': False})
+            
+            # Проверяем, что пользователь существует и активен
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            
+            try:
+                user = User.objects.get(id=user_id, is_active=True)
+                print(f"User found: {user.username}")
+                
+                # Проверяем, что у пользователя есть профиль
+                if hasattr(user, 'profile'):
+                    print(f"User has profile, uuid_session: {user.profile.uuid_session}")
+                    
+                    # Проверяем совпадение uuid_session
+                    if str(user.profile.uuid_session) == uuid_session:
+                        print("UUID session matches")
+                        if user.profile.uuid_is_active:
+                            print("Session is active")
+                            return Response({'is_authenticated': True})
+                        else:
+                            print("Session expired")
+                            return Response({'is_authenticated': False})
+                    else:
+                        print(f"UUID session mismatch. Token: {uuid_session}, Profile: {user.profile.uuid_session}")
+                        return Response({'is_authenticated': False})
+                else:
+                    print("User has no profile")
+                    return Response({'is_authenticated': False})
+            except User.DoesNotExist:
+                print(f"User with id {user_id} not found")
+                return Response({'is_authenticated': False})
+                
+        except jwt.ExpiredSignatureError:
+            print("Token expired")
+            return Response({'is_authenticated': False})
+        except jwt.InvalidTokenError:
+            print("Invalid token")
+            return Response({'is_authenticated': False})
+        except Exception as e:
+            print(f"Error checking authentication: {e}")
+            return Response({'is_authenticated': False})

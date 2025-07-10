@@ -5,23 +5,33 @@ import {
   FormLabel,
   FormHelperText,
   Input,
+  Text,
 } from "@chakra-ui/react";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../endpoints/api";
+import { useAuth } from "../contexts/useAuth";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const novigation = useNavigate();
+  const navigation = useNavigate();
+  const { refreshAuth } = useAuth();
 
   const handleLogin = async () => {
     const success = await login(username, password);
+
     if (success) {
-      novigation("/");
+      await refreshAuth();
+      navigation("/");
     }
   };
+
+  const handleNavigate = () => {
+    navigation('/register')
+  };
+
   return (
     <VStack>
       <FormControl>
@@ -43,6 +53,7 @@ const Login = () => {
         <FormHelperText>Enter your password</FormHelperText>
       </FormControl>
       <Button onClick={handleLogin}>Login</Button>
+      <Text onClick={handleNavigate}>Don't have an account? Sing up!</Text>
     </VStack>
   );
 };

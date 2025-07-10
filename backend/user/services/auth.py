@@ -28,9 +28,12 @@ def create_jwt_token(user) -> str:
 def validate_jwt_token(token) -> Optional[User]:
     try:
         payload = jwt.decode(token, key=settings.SECRET_KEY, algorithms=["HS256"], options={"verify_exp": True})
-        user = User.objects.get(id=payload["user_id"], profile__uuid_session=payload["uuid_session"])
-        if user.is_active and user.profile.uuid_is_active:
-            return user
+        user = User.objects.get(id=payload["user_id"])
+        
+        # Проверяем, что uuid_session в токене совпадает с uuid_session в профиле
+        if str(user.profile.uuid_session) == payload["uuid_session"]:
+            if user.is_active and user.profile.uuid_is_active:
+                return user
         return None
     except Exception as error:
         if settings.DEBUG:

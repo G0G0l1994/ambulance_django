@@ -7,11 +7,11 @@ from user.models import Profile
 class UserCreateSerializer(serializers.ModelSerializer):
     surname = serializers.CharField(write_only=True)
     role = serializers.ChoiceField(choices=Profile.ROLE_CHOICE, write_only=True)
-    password2 = serializers.CharField(write_only=True)
+    passwordConfirm = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ["id", "username", "first_name", "last_name", "surname", "role", "password", "password2", "email"]
+        fields = ["id", "username", "first_name", "last_name", "surname", "role", "password", "passwordConfirm", "email"]
         extra_kwargs = {
             "email": {"required": True},
             "first_name": {"required": True},
@@ -24,14 +24,14 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, attrs):
-        if attrs["password"] != attrs["password2"]:
+        if attrs["password"] != attrs["passwordConfirm"]:
             raise serializers.ValidationError({"password": "Password fields didn't match"})
         return attrs
 
     def create(self, validated_data):
         role = validated_data.pop("role")
         surname = validated_data.pop("surname")
-        validated_data.pop('password2')
+        validated_data.pop('passwordConfirm')
         user = User.objects.create_user(**validated_data)
         Profile.objects.create(user=user, surname=surname, role=role)
         return user

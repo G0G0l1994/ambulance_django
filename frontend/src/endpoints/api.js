@@ -1,10 +1,12 @@
 import axios from "axios";
 
-const BASE_URL = "http://127.0.0.1:8000/api";
+const BASE_URL = "/api";
 const LOGIN_URL = `${BASE_URL}/users/login/`;
 const CARDS_URL = `${BASE_URL}/cards/`;
 const REFRESH_TOKEN = `${BASE_URL}/users/refresh/`;
 const LOGOUT_URL = `${BASE_URL}/users/logout/`;
+const AUTH_URL = `${BASE_URL}/authenticated/`;
+const REGISTER_URL = `${BASE_URL}/registration/`;
 
 export const login = async (username, password) => {
   const response = await axios.post(
@@ -64,5 +66,52 @@ export const logout = async () => {
     return true;
   } catch (error) {
     return false;
+  }
+};
+
+export const is_autenticated = async () => {
+  try {
+    const response = await axios.post(AUTH_URL, {}, { withCredentials: true });
+    console.log("Auth API response:", response.data);
+    return response.data.is_authenticated;
+  } catch (error) {
+    console.error("Auth check error:", error);
+    return false;
+  }
+};
+
+export const register = async (
+  username,
+  first_name,
+  surname,
+  last_name,
+  email,
+  role,
+  password,
+  passwordConfirm
+) => {
+  try {
+    const requestData = {
+      username: username,
+      first_name: first_name,
+      surname: surname,
+      last_name: last_name,
+      email: email,
+      role: role,
+      password: password,
+      passwordConfirm: passwordConfirm,
+    };
+
+    console.log("Sending registration data:", requestData);
+
+    const response = await axios.post(REGISTER_URL, requestData, {
+      withCredentials: true,
+    });
+
+    console.log("Registration response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Registration error:", error.response?.data || error.message);
+    throw error;
   }
 };
