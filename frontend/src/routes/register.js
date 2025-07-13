@@ -166,7 +166,7 @@ const Register = () => {
           <option value="doctor">Врач</option>
           <option value="dispatcher">Диспетчер</option>
         </Select>
-        <FormHelperText>Выберите вашу роль</FormHelperText>
+        <FormHelperText>Выберите вашу должность</FormHelperText>
       </FormControl>
 
       <FormControl isRequired>

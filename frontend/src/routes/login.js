@@ -29,11 +29,11 @@ const Login = () => {
   };
 
   const handleNavigate = () => {
-    navigation('/register')
+    navigation("/register");
   };
 
   return (
-    <VStack>
+    <VStack spacing={4} maxW="400px" mx="auto" p={6}>
       <FormControl>
         <FormLabel>Username</FormLabel>
         <Input
@@ -52,8 +52,13 @@ const Login = () => {
         />
         <FormHelperText>Enter your password</FormHelperText>
       </FormControl>
-      <Button onClick={handleLogin}>Login</Button>
-      <Text onClick={handleNavigate}>Don't have an account? Sing up!</Text>
+      <Button colorScheme="blue" onClick={handleLogin}>
+        Login
+      </Button>
+
+      <Text onClick={handleNavigate} textDecoration={"underline"}>
+        Don't have an account? Sing up!
+      </Text>
     </VStack>
   );
 };
