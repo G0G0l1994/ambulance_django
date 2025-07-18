@@ -1,3 +1,4 @@
+from email.policy import default
 from django.utils import timezone
 from rest_framework import serializers
 
@@ -143,6 +144,18 @@ class DiagnosisDataSerializer(serializers.ModelSerializer):
            "id", "diagnosis","mkb",
         ]
 
+class CardListSerializer(serializers.ModelSerializer):
+    doctor = UserSerializer(source="doctor_id.profile", read_only=True)
+    patient = PatientSerializer(source='patient_id',read_only=True)
+    diagnosis_data = DiagnosisDataSerializer(read_only=True)
+    class Meta:
+        model = Card
+        fields = [
+            'id', 'doctor_id', 'doctor', 'patient_id', 'patient', 
+            'crew', 'cause', 'status', 'diagnosis_data'
+        ]
+    
+
 class CardDetailSerializer(serializers.ModelSerializer):
     doctor = UserSerializer(source='doctor_id.profile', read_only=True)
     patient = PatientSerializer(source='patient_id',read_only=True)
@@ -165,7 +178,7 @@ class CardDetailSerializer(serializers.ModelSerializer):
         model = Card
         fields = [
             'id', 'doctor_id', 'doctor', 'patient_id', 'patient', 
-            'crew', 'cause', 'status', 'status_display', 'created_at',
+            'crew', 'cause', 'status',
             
             # Связанные данные
             'datetime_data', 'common_data', 'parameters_before_data',
@@ -287,4 +300,49 @@ class CardCreateSerializer(serializers.ModelSerializer):
         return card
 
 class CardUpdateSerializer(serializers.ModelSerializer):
-    pass
+    datetime_data = DateTimeDataSerializer(required = False)
+    common_data = CommonDataSerializer(required = False)
+    parameters_before_data = ParametersBeforeSerializer(required = False)
+    parameters_after_data = ParametersAfterSerializer(required = False)
+    skin_data = SkinDataSerializer(required = False)
+    air_data = AirDataSerializer(required = False)
+    heart_data = HeartDataSerializer(required = False)
+    stomach_data = StomachDataSerializer(required = False)
+    nervous_data = NervousDataSerializer(required = False)
+    urinary_data = UrinaryDataSerializer(required = False)
+    ecg_data = ECGDataSerializer(required = False)
+    aid_data = AIDDataSerializer(required = False)
+    diagnosis_data = DiagnosisDataSerializer(required = False)
+
+
+    def update(self,instance,validated_data):
+
+        for attr, value in validated_data:
+            if attr not in [
+            'datetime_data', 'common_data', 'parameters_before_data',
+            'skin_data', 'air_data', 'heart_data', 'stomach_data',
+            'nervous_data', 'urinary_data', 'ecg_data', 'aid_data',
+            'parameters_after_data', 'diagnosis_data'
+            ]:
+                setattr(instance,attr,value)
+        related_serializers = {
+            'datetime_data':DateTimeData, 
+            'common_data': CommonData, 
+            'parameters_before_data': ParametersBefore,
+            'skin_data': SkinData, 
+            'air_data': AirData, 
+            'heart_data': HeartData, 
+            'stomach_data': StomachData,
+            'nervous_data': NervousData, 
+            'urinary_data': UrinaryData, 
+            'ecg_data': ECGData,
+             'aid_data': AIDData,
+            'parameters_after_data': ParametersAfter, 
+            'diagnosis_data':DiagnosisData
+        }
+
+        for field,model in related_serializers.items():
+            if field in validated_data:
+                model.objects.update_or_create(card_id=instance,default=validated_data[field])
+        
+        return instance
