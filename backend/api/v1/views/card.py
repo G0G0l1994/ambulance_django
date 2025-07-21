@@ -59,9 +59,10 @@ class CardUpdateAPIVView(APIView):
 
 class CardListAPIView(APIView):
     permission_classes = [IsAuthenticated]
-
+    
     def get(self,request):
 
         cards = Card.objects.all().order_by('-id')
         serializer = CardListSerializer(cards,many=True)
+        print(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)

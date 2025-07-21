@@ -2,13 +2,15 @@ from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from api.v1.views.user import *
-from api.v1.views.card import CardDetailAPIView, CardListAPIView, CardUpdateAPIVView
+from api.v1.views.card import CardDetailAPIView, CardListAPIView, CardUpdateAPIVView,CardCreateAPIView
 
 urlpatterns = [
     path("users/", UserAPIView.as_view()),
+    path('users/profile/',ProfileAPIView.as_view()),
     path("cards/", CardListAPIView.as_view()),
     path('cards/<int:card_id>/', CardDetailAPIView.as_view()),
     path('cards/<int:card_id>/update/', CardUpdateAPIVView.as_view()),
+    path('cards/create/', CardCreateAPIView.as_view()),
     path('users/login/', LoginAPIView.as_view()),
     path('users/refresh/', RefreshTokenObtain.as_view()),
     path('users/logout/', LogoutAPIView.as_view()),

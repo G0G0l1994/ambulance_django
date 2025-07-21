@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 
-from api.v1.serializers.user import UserCreateSerializer
+from api.v1.serializers.user import UserCreateSerializer, UserSerializer
 from project import settings
 from user.models import Profile, RefreshToken
 from user.services.auth import create_jwt_token, create_refresh_token
@@ -40,6 +40,21 @@ class UserAPIView(APIView):
 
         return Response(output)
 
+class ProfileAPIView(APIView):
+
+    renderer_classes = [JSONRenderer, BrowsableAPIRenderer]
+    parser_classes = [FormParser, MultiPartParser, JSONParser]
+    serializer_class = UserSerializer
+
+    def get(self, request):
+        from user.models import Profile
+        user = request.user
+        try:
+            profile = Profile.objects.get(user=user)
+        except Profile.DoesNotExist:
+            return Response({'detail': 'Профиль не найден'}, status=404)
+        serializer = self.serializer_class(profile)
+        return Response(serializer.data, status=200)
     
 
 class RegistrationAPIVeiw(APIView):
@@ -72,9 +87,9 @@ class LoginAPIView(APIView):
                 user.profile.refresh_session()
             access_token = create_jwt_token(user)
             refresh_token = create_refresh_token(user)
-            res = Response({"success": True, "access_token": access_token, "refresh_token": refresh_token},status=status.HTTP_200_OK)
+            res = Response({"success": True, "access_token": access_token, "refresh_token": refresh_token, "role": user.profile.role},status=status.HTTP_200_OK)
             
-            print(f"Setting cookies for user {user.username}")
+            print(f"Setting cookies for user {user.username} {user.profile.role}")
             print(f"Access token: {access_token[:20]}...")
             
             res.set_cookie(key="access_token",

@@ -147,14 +147,17 @@ class DiagnosisDataSerializer(serializers.ModelSerializer):
 class CardListSerializer(serializers.ModelSerializer):
     doctor = UserSerializer(source="doctor_id.profile", read_only=True)
     patient = PatientSerializer(source='patient_id',read_only=True)
-    diagnosis_data = DiagnosisDataSerializer(read_only=True)
+    diagnosis_data = serializers.SerializerMethodField()
+
     class Meta:
         model = Card
         fields = [
             'id', 'doctor_id', 'doctor', 'patient_id', 'patient', 
             'crew', 'cause', 'status', 'diagnosis_data'
         ]
-    
+    def get_diagnosis_data(self,obj):
+        diagnosis = DiagnosisData.objects.filter(card_id = obj).first()
+        return DiagnosisDataSerializer(diagnosis).data if diagnosis else None
 
 class CardDetailSerializer(serializers.ModelSerializer):
     doctor = UserSerializer(source='doctor_id.profile', read_only=True)
@@ -188,6 +191,13 @@ class CardDetailSerializer(serializers.ModelSerializer):
         ]
 
 class CardCreateSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(write_only=True)
+    last_name = serializers.CharField(write_only=True)
+    surname = serializers.CharField(write_only=True)
+    date_of_birth = serializers.DateField(write_only=True)
+    address = serializers.CharField(write_only=True, required=False, allow_blank=True)
+
+    patient_data = PatientSerializer(read_only=True)
     datetime_data = DateTimeDataSerializer(read_only=True)
     common_data = CommonDataSerializer(read_only=True)
     parameters_before_data = ParametersBeforeSerializer(read_only=True)
@@ -206,7 +216,8 @@ class CardCreateSerializer(serializers.ModelSerializer):
         model = Card
         fields = [
             'id', 'doctor_id', 'patient_id', 
-            'crew', 'cause', 'status',
+            'first_name', 'last_name', 'surname', 'date_of_birth', 'address',
+            'crew', 'cause', 'status', 'patient_data',
             'datetime_data', 'common_data', 'parameters_before_data',
             'skin_data', 'air_data', 'heart_data', 'stomach_data',
             'nervous_data', 'urinary_data', 'ecg_data', 'aid_data',
@@ -216,6 +227,17 @@ class CardCreateSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
     def create(self,validated_data):
+        print(validated_data)
+        patient_data = {
+            'first_name': validated_data.pop('first_name'),
+            'last_name': validated_data.pop('last_name'),
+            'surname': validated_data.pop('surname'),
+            'date_of_birth': validated_data.pop('date_of_birth'),
+            'address': validated_data.pop('address'),
+        }
+        patient, _ = Patient.objects.get_or_create(**patient_data)
+        print(patient, _)
+        validated_data['patient_id'] = patient
         datetime_data = validated_data.pop('datetime_data', None)
         common_data = validated_data.pop('datetime_data', None)
         parameters_before_data = validated_data.pop('parameters_before_data', None)
@@ -233,69 +255,69 @@ class CardCreateSerializer(serializers.ModelSerializer):
         card = Card.objects.create(**validated_data)
 
         if datetime_data:
-            DateTimeData.objects.create(card_id=card,**datetime_data)
+            DateTimeData.objects.create(card=card,**datetime_data)
         else:
-            DateTimeData.objects.create(card_id=card,date_card=timezone.now().date())
+            DateTimeData.objects.create(card=card,date_card=timezone.now().date())
         
         if common_data:
-            CommonData.objects.create(card_id=card,**common_data)
+            CommonData.objects.create(card=card,**common_data)
         else:
-            CommonData.objects.create(card_id=card)
+            CommonData.objects.create(card=card)
         
         if parameters_before_data:
-            ParametersBefore.objects.create(card_id=card,**parameters_before_data)
+            ParametersBefore.objects.create(card=card,**parameters_before_data)
         else:
-            ParametersBefore.objects.create(card_id=card)
+            ParametersBefore.objects.create(card=card)
         
         if parameters_after_data:
-            ParametersAfter.objects.create(card_id=card,**parameters_after_data)
+            ParametersAfter.objects.create(card=card,**parameters_after_data)
         else:
-            ParametersAfter.objects.create(card_id=card)
+            ParametersAfter.objects.create(card=card)
         
         if skin_data:
-            SkinData.objects.create(card_id=card,**skin_data)
+            SkinData.objects.create(card=card,**skin_data)
         else:
-            SkinData.objects.create(card_id=card)
+            SkinData.objects.create(card=card)
         
         if air_data:
-            AirData.objects.create(card_id=card, **air_data)
+            AirData.objects.create(card=card, **air_data)
         else:
-            AirData.objects.create(card_id=card)
+            AirData.objects.create(card=card)
         
         if heart_data:
-            HeartData.objects.create(card_id=card, **heart_data)
+            HeartData.objects.create(card=card, **heart_data)
         else:
-            HeartData.objects.create(card_id=card)
+            HeartData.objects.create(card=card)
         
         if stomach_data:
-            StomachData.objects.create(card_id=card, **stomach_data)
+            StomachData.objects.create(card=card, **stomach_data)
         else:
-            StomachData.objects.create(card_id=card)
+            StomachData.objects.create(card=card)
         
         if nervous_data:
-            NervousData.objects.create(card_id=card, **nervous_data)
+            NervousData.objects.create(card=card, **nervous_data)
         else:
-            NervousData.objects.create(card_id=card)
+            NervousData.objects.create(card=card)
         
         if urinary_data:
-            UrinaryData.objects.create(card_id=card, **urinary_data)
+            UrinaryData.objects.create(card=card, **urinary_data)
         else:
-            UrinaryData.objects.create(card_id=card)
+            UrinaryData.objects.create(card=card)
         
         if ecg_data:
-            ECGData.objects.create(card_id=card, **ecg_data)
+            ECGData.objects.create(card=card, **ecg_data)
         else:
-            ECGData.objects.create(card_id=card)
+            ECGData.objects.create(card=card)
         
         if aid_data:
-            AIDData.objects.create(card_id=card, **aid_data)
+            AIDData.objects.create(card=card, **aid_data)
         else:
-            AIDData.objects.create(card_id=card)
+            AIDData.objects.create(card=card)
                 
         if diagnosis_data:
-            DiagnosisData.objects.create(card_id=card, **diagnosis_data)
+            DiagnosisData.objects.create(card=card, **diagnosis_data)
         else:
-            DiagnosisData.objects.create(card_id=card)
+            DiagnosisData.objects.create(card=card)
         
         return card
 
@@ -343,6 +365,6 @@ class CardUpdateSerializer(serializers.ModelSerializer):
 
         for field,model in related_serializers.items():
             if field in validated_data:
-                model.objects.update_or_create(card_id=instance,default=validated_data[field])
+                model.objects.update_or_create(card=instance,default=validated_data[field])
         
         return instance
