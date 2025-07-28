@@ -11,7 +11,7 @@ class Patient(models.Model):
     first_name = models.CharField(max_length=100, null=True)
     last_name = models.CharField(max_length=100, null=True)
     surname = models.CharField(max_length=100, null=True)
-    address = models.CharField(max_length=100, null=True)
+    
     date_of_birth = models.DateField(null=True)
 
     def get_full_name(self):
@@ -37,7 +37,7 @@ class Patient(models.Model):
         db_table = "Patient"
     
     def __repr__(self):
-        return f"{self.first_name} {self.surname} {self.last_name} {self.get_full_age} {self.address}"
+        return f"{self.first_name} {self.surname} {self.last_name} {self.get_full_age}"
 
 class Card(models.Model):
     doctor_id = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='doctor_cards')
@@ -45,6 +45,7 @@ class Card(models.Model):
     crew = models.IntegerField(null=True)
     cause = models.CharField(max_length=256, null=True)
     status = models.CharField(max_length=100, null=True)
+    address = models.CharField(max_length=100, null=True)
 
     class Meta:
         db_table = "Card"

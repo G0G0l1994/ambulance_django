@@ -2,39 +2,26 @@ import { useState, useEffect } from "react";
 import { VStack, Heading, Button } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { Text } from "@chakra-ui/react";
-import { getProfile } from "../endpoints/api";
-import { logout } from "../endpoints/api";
+import { getCardsList } from "../endpoints/api";
+import { columns } from "../constants/table-fields";
+import { CardTable } from "../components/card.table";
 
 const DispatcherMain = () => {
-    const navigator = useNavigate();
-    const [profile, setProfile] = useState(null);
+    const [cards, setCards] = useState([]);
+
     useEffect(() => {
-        const fetchProfile = async () => {
-            const data = await getProfile();
-            setProfile(data);
+        const fetchCards = async () => {
+            const cardsData = await getCardsList();
+            setCards(Array.isArray(cardsData) ? cardsData : []); // Если cardsData не массив, используем пустой массив
         };
-        fetchProfile();
+        fetchCards();
     }, []);
-    const handleLogout = async () => {
-        const success = await logout();
-        if (success) {
-            navigator("/login");
-        }
-    };
-    const handleSubmit = async () => {
-        navigator("/cards/create");
-    };
+    console.log(cards);
     return (
         <VStack>
             <Heading> Диспетчерская </Heading>
-            <Text>{profile?.username}! </Text>
-            <VStack>
-                <Button onClick={handleLogout} colorScheme="red">
-                    Logout
-                </Button>
-                <Button onClick={handleSubmit} colorScheme="green">
-                    Создать карту
-                </Button>
+            <VStack spacing={4} align="stretch" w="100%">
+                <CardTable columns={columns} cards={cards} />
             </VStack>
         </VStack>
     );

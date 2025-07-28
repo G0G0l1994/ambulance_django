@@ -152,7 +152,7 @@ class CardListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Card
         fields = [
-            'id', 'doctor_id', 'doctor', 'patient_id', 'patient', 
+            'id', 'doctor_id', 'doctor', 'patient_id', 'patient', "address",
             'crew', 'cause', 'status', 'diagnosis_data'
         ]
     def get_diagnosis_data(self,obj):
@@ -233,7 +233,6 @@ class CardCreateSerializer(serializers.ModelSerializer):
             'last_name': validated_data.pop('last_name'),
             'surname': validated_data.pop('surname'),
             'date_of_birth': validated_data.pop('date_of_birth'),
-            'address': validated_data.pop('address'),
         }
         patient, _ = Patient.objects.get_or_create(**patient_data)
         print(patient, _)

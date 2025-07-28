@@ -8,6 +8,7 @@ import Login from "./routes/login";
 import CardsHistory from "./routes/history";
 import CardPage from "./routes/card-create";
 import MainPage from "./routes/main-page";
+import MainLayout from "./components/MainLayout";
 import DispatcherMain from "./routes/dispatcher-main";
 import { AuthProvider } from "./contexts/useAuth";
 import PrivateRoute from "./components/private_route";
@@ -23,15 +24,23 @@ function App() {
                             path="/"
                             element={
                                 <PrivateRoute>
-                                    <MainPage />{" "}
+                                    <MainLayout />
                                 </PrivateRoute>
                             }
-                        />
+                        >
+                            <Route path="/history" element={<CardsHistory />} />
+                            <Route
+                                path="/cards/create"
+                                element={<CardPage />}
+                            />
+                            <Route
+                                path="/dispatcher-main"
+                                element={<DispatcherMain />}
+                            />
+                        </Route>
+
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
-                        <Route path="/history" element={<CardsHistory />} />
-                        <Route path="/cards/create" element={<CardPage />} />
-                        <Route path="/dispatcher-main" element={<DispatcherMain />} />
                     </Routes>
                 </AuthProvider>
             </Router>
