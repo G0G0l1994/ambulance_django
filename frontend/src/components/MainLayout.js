@@ -50,12 +50,13 @@ const MainLayout = () => {
                             </Button>
                         </Link>
                     )}
-
-                    <Link to="/history">
-                        <Button colorScheme="blue" variant="solid">
-                            Карты
-                        </Button>
-                    </Link>
+                    {profile?.role === "doctor" && (
+                        <Link to="/history">
+                            <Button colorScheme="blue" variant="solid">
+                                Карты
+                            </Button>
+                        </Link>
+                    )}
 
                     {profile?.role === "dispatcher" && (
                         <Link to="/cards/create/">

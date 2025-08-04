@@ -19,9 +19,25 @@ class CardDetailAPIView(APIView):
 
     def get(self,request, card_id=None):
         
-        user = request.user
-        cards = Card.objects.filter(id=card_id, doctor_id = user.id)
+        
+        cards = Card.objects.select_related(
+            'patient_id',
+            'datetime_data',
+            'common_data',
+            'parameters_before_data',
+            'parameters_after_data',
+            'skin_data',
+            'air_data',
+            'heart_data',
+            'stomach_data',
+            'nervous_data',
+            'urinary_data',
+            'ecg_data',
+            'aid_data',
+            'diagnosis_data',
+            ).prefetch_related().get(id=card_id)
         serializer = self.serializer_class(cards)
+        print(serializer.data)
         
         return Response(serializer.data,status=status.HTTP_200_OK)
         
@@ -46,15 +62,19 @@ class CardUpdateAPIVView(APIView):
     parser_classes = [JSONParser, FormParser]
     permission_classes = [IsAuthenticated]
 
-    def patch(self, request, card_id):
+    
+
+    def put(self, request, card_id):
         try:
             card = Card.objects.get(id=card_id)
         except Card.DoesNotExist:
             return Response({'detail': "Card not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = self.serializer_class(card, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()
+            serializer.update(card, serializer.validated_data)
+            print(f"card {card_id} updated")
             return Response(serializer.data, status=status.HTTP_200_OK)
+        print(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CardListAPIView(APIView):
@@ -64,5 +84,4 @@ class CardListAPIView(APIView):
 
         cards = Card.objects.all().order_by('-id')
         serializer = CardListSerializer(cards,many=True)
-        print(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)

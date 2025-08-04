@@ -13,7 +13,10 @@ CONSCIOUSNESS_CHOICES = [
     ('clear', 'Ясное'),
     ('confused', 'Оглушение'),
     ('stupor', 'Сопор'),
-    ('coma', 'Кома'),
+    ('coma_1', 'Кома I'),
+    ('coma_2', 'Кома II'),
+    ('coma_3', 'Кома III')
+
 ]
 
 # Положение тела
@@ -51,6 +54,7 @@ RASH_CHOICES = [
 THROAT_CHOICES = [
     ('calm', 'Спокоен'),
     ('hyperemic', 'Гиперемирован'),
+    ('pale', 'Бледный')
 ]
 
 # Типы отеков
@@ -60,6 +64,7 @@ SWELLING_CHOICES = [
     ('face', 'Лицо'),
     ('torso', 'Туловище'),
     ('arms', 'Руки'),
+    ('generalized', 'Генерализованные')
 ]
 
 # Типы дыхания

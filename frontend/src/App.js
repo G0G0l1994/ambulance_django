@@ -7,12 +7,15 @@ import { ChakraProvider } from "@chakra-ui/react";
 import Login from "./routes/login";
 import CardsHistory from "./routes/history";
 import CardPage from "./routes/card-create";
+import CardDetail from "./routes/card-detail";
+import CardUpdate from "./routes/card-update";
 import MainPage from "./routes/main-page";
 import MainLayout from "./components/MainLayout";
 import DispatcherMain from "./routes/dispatcher-main";
 import { AuthProvider } from "./contexts/useAuth";
 import PrivateRoute from "./components/private_route";
 import Register from "./routes/register";
+
 
 function App() {
     return (
@@ -36,6 +39,14 @@ function App() {
                             <Route
                                 path="/dispatcher-main"
                                 element={<DispatcherMain />}
+                            />
+                            <Route
+                                path="/cards/:card_id"
+                                element={<CardDetail />}
+                            />
+                            <Route
+                                path="/cards/:card_id/update"
+                                element={<CardUpdate />}
                             />
                         </Route>
 

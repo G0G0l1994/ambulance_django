@@ -8,6 +8,7 @@ import os
 import django
 from datetime import date, datetime, time
 from decimal import Decimal
+from faker import Faker
 
 # Настройка Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "project.settings")
@@ -25,9 +26,10 @@ from card.models import (
 
 def create_test_cards():
     """Создание тестовых карт с указанными ID пользователей"""
-    
+    fake = Faker(["ru_RU"])
     # Получаем пользователя и профиль
     try:
+
         user = User.objects.get(id=32)
         profile = Profile.objects.get(id=15)
         print(f"Найден пользователь: {user.username} (ID: {user.id})")
@@ -45,35 +47,35 @@ def create_test_cards():
             'first_name': 'Александр',
             'last_name': 'Петров',
             'surname': 'Иванович',
-            'address': 'ул. Ленина, 15, кв. 23',
+            
             'date_of_birth': date(1985, 3, 12)
         },
         {
             'first_name': 'Мария',
             'last_name': 'Сидорова',
             'surname': 'Петровна',
-            'address': 'пр. Мира, 45, кв. 7',
+            
             'date_of_birth': date(1978, 7, 25)
         },
         {
             'first_name': 'Дмитрий',
             'last_name': 'Козлов',
             'surname': 'Александрович',
-            'address': 'ул. Гагарина, 8, кв. 12',
+            
             'date_of_birth': date(1992, 11, 8)
         },
         {
             'first_name': 'Елена',
             'last_name': 'Морозова',
             'surname': 'Дмитриевна',
-            'address': 'ул. Пушкина, 33, кв. 5',
+            
             'date_of_birth': date(1980, 9, 15)
         },
         {
             'first_name': 'Сергей',
             'last_name': 'Волков',
             'surname': 'Сергеевич',
-            'address': 'пр. Победы, 67, кв. 18',
+            
             'date_of_birth': date(1975, 4, 30)
         }
     ]
@@ -93,10 +95,11 @@ def create_test_cards():
     # Данные для карт
     cards_data = [
         {
-            'id': 1001,
+            
             'crew': 101,
             'cause': 'Высокая температура, кашель',
             'status': 'completed',
+            'address': fake.street_address(),
             'datetime_data': {
                 'time_of_receipt': timezone.make_aware(datetime(2024, 1, 15, 14, 30)),
                 'transmission_time': timezone.make_aware(datetime(2024, 1, 15, 14, 35)),
@@ -202,10 +205,11 @@ def create_test_cards():
             }
         },
         {
-            'id': 1002,
+            
             'crew': 102,
             'cause': 'Боль в груди',
             'status': 'completed',
+            'address': fake.street_address(),
             'datetime_data': {
                 'time_of_receipt': timezone.make_aware(datetime(2024, 1, 16, 9, 15)),
                 'transmission_time': timezone.make_aware(datetime(2024, 1, 16, 9, 20)),
@@ -313,10 +317,11 @@ def create_test_cards():
             }
         },
         {
-            'id': 1003,
+            
             'crew': 103,
             'cause': 'Травма головы',
             'status': 'completed',
+            'address': fake.street_address(),
             'datetime_data': {
                 'time_of_receipt': timezone.make_aware(datetime(2024, 1, 17, 16, 45)),
                 'transmission_time': timezone.make_aware(datetime(2024, 1, 17, 16, 50)),
@@ -426,87 +431,88 @@ def create_test_cards():
     # Создаем карты
     for i, card_data in enumerate(cards_data):
         # Создаем основную карту
-        card, created = Card.objects.get_or_create(
-            id=card_data['id'],
-            defaults={
+        card = Card.objects.create(
+            
+            **{
                 'doctor_id': user,
                 'patient_id': patients[i % len(patients)],
                 'crew': card_data['crew'],
                 'cause': card_data['cause'],
-                'status': card_data['status']
+                'status': card_data['status'],
+                "address": card_data['address']
             }
         )
         
-        if created:
-            print(f"Создана карта {card.id}: {card.cause}")
+        
+        print(f"Создана карта {card.id}: {card.cause}")
             
             # Создаем связанные данные
-            DateTimeData.objects.get_or_create(
-                card_id=card,
+        DateTimeData.objects.get_or_create(
+                card_id=card.id,
                 defaults=card_data['datetime_data']
             )
             
-            CommonData.objects.get_or_create(
-                card_id=card,
+        CommonData.objects.get_or_create(
+                card_id=card.id,
                 defaults=card_data['common_data']
             )
             
-            ParametersBefore.objects.get_or_create(
-                card_id=card,
+        ParametersBefore.objects.get_or_create(
+                card_id=card.id,
                 defaults=card_data['parameters_before']
             )
             
-            SkinData.objects.get_or_create(
-                card_id=card,
+        SkinData.objects.get_or_create(
+                card_id=card.id,
                 defaults=card_data['skin_data']
             )
             
-            AirData.objects.get_or_create(
-                card_id=card,
+        AirData.objects.get_or_create(
+                card_id=card.id,
                 defaults=card_data['air_data']
             )
             
-            HeartData.objects.get_or_create(
-                card_id=card,
+        HeartData.objects.get_or_create(
+                card_id=card.id,
                 defaults=card_data['heart_data']
             )
             
-            StomachData.objects.get_or_create(
-                card_id=card,
+        StomachData.objects.get_or_create(
+                card_id=card.id,
                 defaults=card_data['stomach_data']
             )
             
-            NervousData.objects.get_or_create(
-                card_id=card,
+        NervousData.objects.get_or_create(
+                card_id=card.id,
                 defaults=card_data['nervous_data']
             )
             
-            UrinaryData.objects.get_or_create(
-                card_id=card,
+        UrinaryData.objects.get_or_create(
+                card_id=card.id,
                 defaults=card_data['urinary_data']
             )
             
-            ECGData.objects.get_or_create(
-                card_id=card,
+        ECGData.objects.get_or_create(
+                card_id=card.id,
                 defaults=card_data['ecg_data']
             )
             
-            AIDData.objects.get_or_create(
-                card_id=card,
+        AIDData.objects.get_or_create(
+                card_id=card.id,
                 defaults=card_data['aid_data']
             )
             
-            ParametersAfter.objects.get_or_create(
-                card_id=card,
+        ParametersAfter.objects.get_or_create(
+                card_id=card.id,
                 defaults=card_data['parameters_after']
             )
             
-            DiagnosisData.objects.get_or_create(
-                card_id=card,
+        DiagnosisData.objects.get_or_create(
+                card_id=card.id,
                 defaults=card_data['diagnosis_data']
             )
-        else:
-            print(f"Карта {card.id} уже существует")
+        # else:
+        #     print(f"Карта {card.id} уже существует")
 
     print(f"\n✅ Создано {len(cards_data)} тестовых карт")
     print(f"👨‍⚕️ Врач: {user.get_full_name()} (ID: {user.id})")

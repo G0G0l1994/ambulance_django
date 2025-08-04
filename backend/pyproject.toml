@@ -9,6 +9,7 @@ dependencies = [
     "django-cors-headers>=4.7.0",
     "django-stubs>=5.2.0",
     "djangorestframework>=3.16.0",
+    "faker>=37.4.2",
     "mypy>=1.15.0",
     "pydantic>=2.11.3",
     "pyjwt>=2.10.1",

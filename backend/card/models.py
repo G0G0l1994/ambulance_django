@@ -51,7 +51,7 @@ class Card(models.Model):
         db_table = "Card"
 
 class DateTimeData(models.Model):
-    card = models.ForeignKey(Card,on_delete=models.CASCADE, related_name='datetime_data')
+    card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='datetime_data')
     date_card = models.DateField(auto_now=True)  # дата карты
     time_of_receipt = models.DateTimeField(null=True)  # время приёма
     transmission_time = models.DateTimeField(null=True)  # время передачи
@@ -66,7 +66,7 @@ class DateTimeData(models.Model):
     
 class CommonData(models.Model):
     # общие сведения
-    card = models.ForeignKey(Card,on_delete=models.CASCADE, related_name='common_data')
+    card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='common_data')
     complaints = models.TextField(null=True)
     anamnesis = models.TextField(null=True)
     general_assessment = models.CharField(max_length=100, null=True, choices=GENERAL_ASSESSMENT_CHOICES,default="satisfactory")
@@ -82,22 +82,22 @@ class CommonData(models.Model):
 
 class ParametersBefore(models.Model):
     # показатели до
-    card = models.ForeignKey(Card,on_delete=models.CASCADE, related_name='parameters_before_data')
-    temperature_before = models.FloatField(null=True)
-    respiratory_rate_before = models.IntegerField(null=True)
-    heartbite_before = models.IntegerField(null=True)
-    saturation_before = models.IntegerField(null=True)
-    pulse_before = models.IntegerField(null=True)
-    blood_pressure_systolic_before = models.IntegerField(null=True)
-    blood_pressure_diastolic_before = models.IntegerField(null=True)
-    blood_glucose_before = models.FloatField(null=True)
+    card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='parameters_before_data')
+    temperature = models.FloatField(null=True)
+    respiratory_rate = models.IntegerField(null=True)
+    heartbite = models.IntegerField(null=True)
+    saturation = models.IntegerField(null=True)
+    pulse = models.IntegerField(null=True)
+    blood_pressure_systolic = models.IntegerField(null=True)
+    blood_pressure_diastolic = models.IntegerField(null=True)
+    blood_glucose = models.FloatField(null=True)
 
     class Meta:
         db_table = "ParametersBefore"
 
 class SkinData(models.Model):
     # кожные покровы
-    card = models.ForeignKey(Card,on_delete=models.CASCADE, related_name='skin_data')
+    card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='skin_data')
     dry_skin = models.CharField(max_length=100, null=True, choices=SKIN_DRYNESS_CHOICES,default="dry")
     color_skin = models.CharField(max_length=100, null=True, choices=SKIN_COLOR_CHOICES,default='normal')
     jaundice = models.CharField(max_length=100, null=True,default=DEFAULT_VALUES['jaundice'])  # желтушность
@@ -112,10 +112,10 @@ class SkinData(models.Model):
 
 class AirData(models.Model):
     # дыхательная система
-    card = models.ForeignKey(Card,on_delete=models.CASCADE, related_name='air_data')
+    card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='air_data')
     respiratory_type = models.CharField(max_length=100, null=True,choices=RESPIRATORY_TYPE_CHOICES,default='vesicular')
     wheezing = models.CharField(max_length=100, null=True,choices=WHEEZING_CHOICES,default='none')  # хрипы
-    wheezing_localisation = models.CharField(max_length=100, null=True)  # локализация хрипов
+    wheezing_localisation = models.CharField(max_length=100, null=True,)  # локализация хрипов
     dyspnea = models.CharField(max_length=100, null=True,choices=DYSPNEA_CHOICES,default='none')  # одышка
 
     class Meta:
@@ -123,7 +123,7 @@ class AirData(models.Model):
 
 class HeartData(models.Model):
     #сердечно-сосудистая система
-    card = models.ForeignKey(Card,on_delete=models.CASCADE, related_name='heart_data')
+    card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='heart_data')
     heart_rate_deficit = models.BooleanField(null=True,default=False)
     heart_tone_accent = models.CharField(max_length=100, null=True,default=DEFAULT_VALUES['heart_tone_accent'])  # акцент тона
     rhythmic_tone = models.CharField(max_length=100, null=True,choices=RHYTHMIC_TONE_CHOICES,default='rhythmic')
@@ -137,7 +137,7 @@ class HeartData(models.Model):
 
 class StomachData(models.Model):
     # живот
-    card = models.ForeignKey(Card,on_delete=models.CASCADE, related_name='stomach_data')
+    card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='stomach_data')
     liver = models.CharField(max_length=100, null=True, default=DEFAULT_VALUES['liver'])  # печень
     pain_stomach = models.CharField(max_length=100, null=True)
     characteristic_stomach = models.CharField(max_length=100, null=True,choices=PAIN_STOMACH_CHOICES,default='painless')
@@ -159,7 +159,7 @@ class StomachData(models.Model):
 
 class NervousData(models.Model):
     # нервная система
-    card = models.ForeignKey(Card,on_delete=models.CASCADE, related_name='nervous_data')
+    card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='nervous_data')
     behaviour = models.CharField(max_length=100, null=True, choices=BEHAVIOUR_CHOICES,default='calm')
     reaction_to_light = models.CharField(max_length=100, null=True, choices=REACTION_TO_LIGHT,default='yes')
     pupils_of_the_eyes = models.CharField(max_length=100, null=True,choices=PUPILS_OF_THE_EYES_CHOICES,default='normal')
@@ -179,7 +179,7 @@ class NervousData(models.Model):
 
 class UrinaryData(models.Model):
     # мочеполовая система
-    card = models.ForeignKey(Card,on_delete=models.CASCADE, related_name='urinary_data')
+    card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='urinary_data')
     kidney_punch = models.CharField(max_length=100, null=True,choices=KIDNEY_PUNCH_CHOICES,default='negative_both')  # симптом покалачивания
     characteristic_urine = models.CharField(max_length=100, null=True,choices=CHARACTERISTIC_URINE_CHOICES,default='light_yellow')
     with_inclusions = models.BooleanField(null=True,default=False)
@@ -192,7 +192,7 @@ class UrinaryData(models.Model):
 
 class ECGData(models.Model):
     # ЭКГ
-    card = models.ForeignKey(Card,on_delete=models.CASCADE, related_name='ecg_data')
+    card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='ecg_data')
     ecg_before = models.TextField(null=True)
     ecg_after = models.TextField(null=True)
 
@@ -201,7 +201,7 @@ class ECGData(models.Model):
 
 class AIDData(models.Model):
     # помощь
-    card = models.ForeignKey(Card,on_delete=models.CASCADE, related_name='aid_data')
+    card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='aid_data')
     aid = models.TextField(null=True)
     aid_effect = models.CharField(max_length=100, null=True, choices=AID_EFFECTS, default='improvement')
 
@@ -210,22 +210,22 @@ class AIDData(models.Model):
 
 class ParametersAfter(models.Model):
     # показатели после    
-    card = models.ForeignKey(Card,on_delete=models.CASCADE, related_name='parameters_after_data')
-    temperature_after = models.FloatField(null=True)
-    respiratory_rate_after = models.IntegerField(null=True)
-    heartbite_after = models.IntegerField(null=True)
-    saturation_after = models.IntegerField(null=True)
-    pulse_after = models.IntegerField(null=True)
-    blood_pressure_systolic_after = models.IntegerField(null=True)
-    blood_pressure_diastolic_after = models.IntegerField(null=True)
-    blood_glucose_after = models.FloatField(null=True)
+    card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='parameters_after_data')
+    temperature = models.FloatField(null=True)
+    respiratory_rate = models.IntegerField(null=True)
+    heartbite = models.IntegerField(null=True)
+    saturation = models.IntegerField(null=True)
+    pulse = models.IntegerField(null=True)
+    blood_pressure_systolic = models.IntegerField(null=True)
+    blood_pressure_diastolic = models.IntegerField(null=True)
+    blood_glucose = models.FloatField(null=True)
 
     class Meta:
         db_table = "ParametersAfter"
 
 class DiagnosisData(models.Model):
     # диагноз
-    card = models.ForeignKey(Card,on_delete=models.CASCADE, related_name='diagnosis_data')
+    card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='diagnosis_data')
     diagnosis = models.CharField(max_length=100, null=True)
     mkb = models.CharField(max_length=100, null=True)
 

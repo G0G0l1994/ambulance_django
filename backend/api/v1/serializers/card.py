@@ -23,22 +23,39 @@ class PatientSerializer(serializers.ModelSerializer):
 
 class DateTimeDataSerializer(serializers.ModelSerializer):
     
+    time_of_receipt_label = serializers.CharField(default='Время приёма вызова')
+    transmission_time_label = serializers.CharField(default="Время передачи вызова")
+    departure_time_label = serializers.CharField(default='Время приёма бригадой')
+    arrival_time_label = serializers.CharField(default='Время прибытия')
+    start_time_of_hospitalization_label = serializers.CharField(default="Время госпитализации")
+    time_of_arrival_at_hospital_label = serializers.CharField(default="Время прибытия в стационар")
+    call_end_time_label = serializers.CharField(default="Время окончания вызова")
+
     class Meta:
         model = DateTimeData
         fields = [
             "id","date_card","time_of_receipt","transmission_time",
             "departure_time","arrival_time","start_time_of_hospitalization",
-            "time_of_arrival_at_hospital","call_end_time"
+            "time_of_arrival_at_hospital","call_end_time",
+            "time_of_receipt_label","transmission_time_label","departure_time_label",
+            "arrival_time_label","start_time_of_hospitalization_label","time_of_arrival_at_hospital_label",
+            "call_end_time_label"
         ]
+    
+    
+    
 
 class ParametersBeforeSerializer(serializers.ModelSerializer):
     
+    
+
+
     class Meta:
         model = ParametersBefore
         fields  = [
-            "id","temperature_before","respiratory_rate_before","heartbite_before",
-            "saturation_before","pulse_before","blood_pressure_systolic_before",
-            "blood_pressure_diastolic_before","blood_glucose_before"
+            "id","temperature","respiratory_rate","heartbite",
+            "saturation","pulse","blood_pressure_systolic",
+            "blood_pressure_diastolic","blood_glucose"
         ]
 
 class ParametersAfterSerializer(serializers.ModelSerializer):
@@ -46,21 +63,25 @@ class ParametersAfterSerializer(serializers.ModelSerializer):
     class Meta:
         model = ParametersAfter
         fields = [
-            "id","temperature_after","respiratory_rate_after","heartbite_after",
-            "saturation_after","pulse_after",
-            "blood_pressure_systolic_after","blood_pressure_diastolic_after",
-            "blood_glucose_after"
+            "id","temperature","respiratory_rate","heartbite",
+            "saturation","pulse",
+            "blood_pressure_systolic","blood_pressure_diastolic",
+            "blood_glucose"
         ]
 
 class CommonDataSerializer(serializers.ModelSerializer):
     
+    general_assessment_label = serializers.SerializerMethodField()
+
     class Meta:
         model = CommonData
         fields = [
             "id","complaints","anamnesis","general_assessment","сonsciousness",
             "glasgow_scale","body_position","normal_blood_pressure_systolic",
-            "normal_blood_pressure_diastolic","status_localis"
+            "normal_blood_pressure_diastolic","status_localis","general_assessment_label",
         ]
+    def get_general_assessment_label(self,obj):
+        return obj.get_general_assessment_display()
 
 class SkinDataSerializer(serializers.ModelSerializer):
     
@@ -181,7 +202,7 @@ class CardDetailSerializer(serializers.ModelSerializer):
         model = Card
         fields = [
             'id', 'doctor_id', 'doctor', 'patient_id', 'patient', 
-            'crew', 'cause', 'status',
+            'crew', 'cause', 'status', 'address',
             
             # Связанные данные
             'datetime_data', 'common_data', 'parameters_before_data',
@@ -321,6 +342,8 @@ class CardCreateSerializer(serializers.ModelSerializer):
         return card
 
 class CardUpdateSerializer(serializers.ModelSerializer):
+    doctor = UserSerializer(source='doctor_id.profile', read_only=True)
+    patient = PatientSerializer(source='patient_id')
     datetime_data = DateTimeDataSerializer(required = False)
     common_data = CommonDataSerializer(required = False)
     parameters_before_data = ParametersBeforeSerializer(required = False)
@@ -335,18 +358,39 @@ class CardUpdateSerializer(serializers.ModelSerializer):
     aid_data = AIDDataSerializer(required = False)
     diagnosis_data = DiagnosisDataSerializer(required = False)
 
-
-    def update(self,instance,validated_data):
-
-        for attr, value in validated_data:
-            if attr not in [
+    class Meta:
+        model = Card
+        fields = [
+            'id', 'doctor_id', 'doctor', 'patient_id', 'patient', 
+            'crew', 'cause', 'status', 'address',
+            
+            # Связанные данные
             'datetime_data', 'common_data', 'parameters_before_data',
             'skin_data', 'air_data', 'heart_data', 'stomach_data',
             'nervous_data', 'urinary_data', 'ecg_data', 'aid_data',
             'parameters_after_data', 'diagnosis_data'
+        ]
+    
+    def update(self,instance,validated_data):
+
+        patient_data = validated_data.pop('patient_id', None)
+        if patient_data:
+        # Получаем или создаем экземпляр Patient
+            patient, created = Patient.objects.update_or_create(
+            id=instance.patient_id.id if instance.patient_id else None,
+            defaults=patient_data
+        )
+        instance.patient_id = patient
+        for attr, value in validated_data.items():
+            if attr not in [
+            'datetime_data', 'common_data', 'parameters_before_data',
+            'skin_data', 'air_data', 'heart_data', 'stomach_data',
+            'nervous_data', 'urinary_data', 'ecg_data', 'aid_data',
+            'parameters_after_data', 'diagnosis_data', 'patient'
             ]:
                 setattr(instance,attr,value)
         related_serializers = {
+            "patient": Patient,
             'datetime_data':DateTimeData, 
             'common_data': CommonData, 
             'parameters_before_data': ParametersBefore,
@@ -364,6 +408,6 @@ class CardUpdateSerializer(serializers.ModelSerializer):
 
         for field,model in related_serializers.items():
             if field in validated_data:
-                model.objects.update_or_create(card=instance,default=validated_data[field])
+                model.objects.update_or_create(card=instance,defaults=validated_data[field])
         
         return instance

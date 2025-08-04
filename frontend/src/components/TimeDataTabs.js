@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
-import { HStack, Input, Text, VStack, Grid, GridItem } from "@chakra-ui/react";
+import {
+  HStack,
+  Input,
+  Text,
+  VStack,
+  Grid,
+  GridItem,
+  Button,
+} from "@chakra-ui/react";
 
 const TimeDataTab = ({ time, onRefSave }) => {
   const [localData, setLocalData] = useState(time);
-
   useEffect(() => {
     setLocalData(time);
   }, [time]);
@@ -49,53 +56,120 @@ const TimeDataTab = ({ time, onRefSave }) => {
         </HStack>
         <HStack>
           <Text>Время прибытия:</Text>
-          <Input
-            value={new Date(localData.arrival_time || " ").toLocaleTimeString(
-              "ru-ru"
-            )}
-            onChange={(e) => handleChange("arrival_time", e.target.value)}
-          />
+          {localData.arrival_time && (
+            <Input
+              value={new Date(localData.arrival_time || " ").toLocaleTimeString(
+                "ru-ru"
+              )}
+              onChange={(e) => {
+                handleChange("arrival_time", e.target.value);
+              }}
+            />
+          )}
+          {!localData.arrival_time && (
+            <Button
+              backgroundColor="blue.300"
+              onClick={(e) => {
+                handleChange(
+                  "arrival_time",
+                  new Date(Date.now()).toISOString()
+                );
+              }}
+            >
+              Отметить
+            </Button>
+          )}
         </HStack>
       </GridItem>
       <GridItem>
         <HStack>
           <Text>Начало госпитализации:</Text>
-          <Input
-            value={
-              localData.start_time_of_hospitalization
-                ? new Date(
-                    localData.start_time_of_hospitalization
-                  ).toLocaleTimeString("ru-ru")
-                : "00:00:00"
-            }
-            onChange={(e) =>
-              handleChange("start_time_of_hospitalization", e.target.value)
-            }
-          />
+
+          {localData.start_time_of_hospitalization && (
+            <Input
+              value={
+                localData.start_time_of_hospitalization
+                  ? new Date(
+                      localData.start_time_of_hospitalization
+                    ).toLocaleTimeString("ru-ru")
+                  : "00:00:00"
+              }
+              onChange={(e) => {
+                handleChange("start_time_of_hospitalization", e.target.value);
+              }}
+            />
+          )}
+          {!localData.start_time_of_hospitalization && (
+            <Button
+              backgroundColor="blue.300"
+              onClick={(e) => {
+                handleChange(
+                  "start_time_of_hospitalization",
+                  new Date(Date.now()).toISOString()
+                );
+                console.log(localData);
+                console.log("click");
+              }}
+            >
+              {" "}
+              Отметить
+            </Button>
+          )}
         </HStack>
         <HStack>
           <Text>Время прибытия в стационар:</Text>
-          <Input
-            value={
-              localData.time_of_arrival_at_hospital
-                ? new Date(
-                    localData.time_of_arrival_at_hospital
-                  ).toLocaleTimeString("ru-ru")
-                : "00:00:00"
-            }
-            onChange={(e) =>
-              handleChange("time_of_arrival_at_hospital", e.target.value)
-            }
-          />
+          {localData.time_of_arrival_at_hospital && (
+            <Input
+              value={
+                localData.time_of_arrival_at_hospital
+                  ? new Date(
+                      localData.time_of_arrival_at_hospital
+                    ).toLocaleTimeString("ru-ru")
+                  : "00:00:00"
+              }
+              onChange={(e) => {
+                handleChange("time_of_arrival_at_hospital", e.target.value);
+              }}
+            />
+          )}
+          {!localData.time_of_arrival_at_hospital && (
+            <Button
+              backgroundColor="blue.300"
+              onClick={(e) => {
+                handleChange(
+                  "time_of_arrival_at_hospital",
+                  new Date(Date.now()).toISOString()
+                );
+              }}
+            >
+              {" "}
+              Отметить
+            </Button>
+          )}
         </HStack>
         <HStack>
           <Text>Окончание вызова:</Text>
-          <Input
-            value={new Date(localData.call_end_time || " ").toLocaleTimeString(
-              "ru-ru"
-            )}
-            onChange={(e) => handleChange("call_end_time", e.target.value)}
-          />
+          {localData.call_end_time && (
+            <Input
+              value={new Date(
+                localData.call_end_time || " "
+              ).toLocaleTimeString("ru-ru")}
+              onChange={(e) => handleChange("call_end_time", e.target.value)}
+            />
+          )}
+          {!localData.call_end_time && (
+            <Button
+              backgroundColor="blue.300"
+              onClick={(e) => {
+                handleChange(
+                  "call_end_time",
+                  new Date(Date.now()).toISOString()
+                );
+              }}
+            >
+              Отметить
+            </Button>
+          )}
         </HStack>
       </GridItem>
     </Grid>
