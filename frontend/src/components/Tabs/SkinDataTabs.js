@@ -1,14 +1,14 @@
 import { Grid, GridItem, HStack, Input, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
-import { SelectChoice } from "./choice.field";
+import { SelectChoice } from "../choice.field";
 import {
   SKIN_COLOR_CHOICES,
   SKIN_DRYNESS_CHOICES,
   RASH_CHOICES,
   SWELLING_CHOICES,
   THROAT_CHOICES,
-} from "../constants/select-text";
+} from "../../constants/select-text";
 
 const SkinTabs = ({ skin, onRefSave }) => {
   const [localData, setLocalData] = useState(skin);
@@ -71,27 +71,31 @@ const SkinTabs = ({ skin, onRefSave }) => {
             handleChange("throat", e.target.value);
           }}
         />
-        <HStack>
+        <HStack p={2}>
           <Text>Миндалины</Text>
           <Input
+            w="260px"
+            ml="20px"
             value={localData.tonsils}
             onChange={(e) => {
               handleChange("tonsils", e.target.value);
             }}
           />
         </HStack>
-        <HStack>
+        <HStack p={2}>
           <Text>Лимфатические узлы</Text>
           <Input
+            w="250px"
             value={localData.lymph_nodes}
             onChange={(e) => {
               handleChange("lymph_nodes", e.target.value);
             }}
           />
         </HStack>
-        <HStack>
+        <HStack p={2}>
           <Text>Желтушность</Text>
           <Input
+            w="265px"
             value={localData.jaundice}
             onChange={(e) => {
               handleChange("jaundice", e.target.value);

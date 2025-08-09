@@ -110,16 +110,12 @@ MURMUR_CHOICES = [
 ]
 
 # Ритм тонов сердца
-RHYTHMIC_TONE_CHOICES = [
+RHYTHMIC_CHOICES = [
     ('rhythmic', 'Ритмичный'),
     ('arrhythmic', 'Аритмичный'),
 ]
 
-# Ритм пульса
-RHYTHMIC_PULSE_CHOICES = [
-    ('rhythmic', 'Ритмичный'),
-    ('arrhythmic', 'Аритмичный'),
-]
+
 
 # Характеристики пульса
 CHARACTERISTIC_PULSE_CHOICES = [
@@ -190,6 +186,7 @@ PARALYSIS_CHOICES = [
     ('none', 'Нет'),
     ('right', 'Справа'),
     ('left', 'Слева'),
+    ('total', "Обе стороны")
 ]
 
 # Чувствительность
@@ -197,8 +194,7 @@ SENSITIVE_CHOICES = [
     ('preserved', 'Сохранена'),
     ('absent', 'Отсутствует'),
     ('reduced', 'Снижена'),
-    ('left', 'Слева'),
-    ('right', 'Справа'),
+    
 ]
 
 # Болезненность мочеиспускания

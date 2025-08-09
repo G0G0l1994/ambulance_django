@@ -126,10 +126,10 @@ class HeartData(models.Model):
     card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='heart_data')
     heart_rate_deficit = models.BooleanField(null=True,default=False)
     heart_tone_accent = models.CharField(max_length=100, null=True,default=DEFAULT_VALUES['heart_tone_accent'])  # акцент тона
-    rhythmic_tone = models.CharField(max_length=100, null=True,choices=RHYTHMIC_TONE_CHOICES,default='rhythmic')
+    rhythmic_tone = models.CharField(max_length=100, null=True,choices=RHYTHMIC_CHOICES,default='rhythmic')
     tone_of_heart = models.CharField(max_length=100, null=True,choices=TONE_OF_HEART_CHOICES,default='clear')
     murmur = models.CharField(max_length=100, null=True,choices=MURMUR_CHOICES,default='none')
-    rhythmic_pulse = models.CharField(max_length=100, null=True,choices=RHYTHMIC_PULSE_CHOICES,default='rhythmic')
+    rhythmic_pulse = models.CharField(max_length=100, null=True,choices=RHYTHMIC_CHOICES,default='rhythmic')
     characteristic_pulse = models.CharField(max_length=100, null=True,choices=CHARACTERISTIC_PULSE_CHOICES,default='normal')
 
     class Meta:

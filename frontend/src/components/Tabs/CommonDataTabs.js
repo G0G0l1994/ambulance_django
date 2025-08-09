@@ -12,7 +12,7 @@ import {
   GENERAL_ASSESSMENT_CHOICES,
   CONSCIOUSNESS_CHOICES,
   BODY_POSITION_CHOICES,
-} from "../constants/select-text";
+} from "../../constants/select-text";
 
 const CommonDataTab = ({ common_data, onRefSave }) => {
   const [localData, setLocalData] = useState(common_data);

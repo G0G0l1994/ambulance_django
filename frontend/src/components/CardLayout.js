@@ -1,11 +1,16 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
-import PatientTab from "./PatientDataTabs";
-import TimeDataTab from "./TimeDataTabs";
-import CommonDataTab from "./CommonDataTabs";
-import ParamsTabs from "./ParamsTabs";
-import SkinTabs from "./SkinDataTabs";
+import PatientTab from "./Tabs/PatientDataTabs";
+import TimeDataTab from "./Tabs/TimeDataTabs";
+import CommonDataTab from "./Tabs/CommonDataTabs";
+import ParamsTabs from "./Tabs/ParamsTabs";
+import SkinTabs from "./Tabs/SkinDataTabs";
 import { useCard } from "../hook/useCard";
+import AirDataTabs from "./Tabs/AirDataTabs";
+import HeartDataTabs from "./Tabs/HeartDataTabs";
+import StomachDataTabs from "./Tabs/StomachDataTabs";
+import NervousDataTabs from "./Tabs/NervousDataTabs";
+
 import {
   Button,
   Tab,
@@ -18,30 +23,18 @@ import { patchCard } from "../endpoints/api";
 
 const CardLayout = ({ card_id }) => {
   const { card, loading, error } = useCard(card_id);
+  console.log("init card:", card);
   const patientRef = useRef();
   const timeRef = useRef();
   const commonRef = useRef();
   const paramsBeforeRef = useRef();
   const paramsAfterRef = useRef();
   const skinRef = useRef();
+  const airRef = useRef();
+  const heartRef = useRef();
+  const stomachRef = useRef();
+  const nervousRef = useRef();
 
-  const handleUpdateCheck = async () => {
-    const patientData = patientRef.current?.();
-    const timeData = timeRef.current?.();
-    const paramsBefore = paramsBeforeRef.current?.();
-    const paramsAfter = paramsAfterRef.current?.();
-    const skinData = skinRef.current?.();
-
-    const updateData = {
-      ...card,
-      patient: patientData,
-      datetime_data: timeData,
-      parameters_before_data: paramsBefore,
-      parameters_after_data: paramsAfter,
-      skin_data: skinData,
-    };
-    console.log(updateData);
-  };
   const handleSave = async () => {
     try {
       const patientData = patientRef.current?.();
@@ -49,6 +42,11 @@ const CardLayout = ({ card_id }) => {
       const commonData = commonRef.current?.();
       const paramsBefore = paramsBeforeRef.current?.();
       const skinData = skinRef.current?.();
+      const airData = airRef.current?.();
+      const heartData = heartRef.current?.();
+      const stomachData = stomachRef.current?.();
+      const nervousData = nervousRef.current?.();
+
       const updateData = {
         ...card,
         patient: patientData,
@@ -56,6 +54,10 @@ const CardLayout = ({ card_id }) => {
         common_data: commonData,
         parameters_before_data: paramsBefore,
         skin_data: skinData,
+        air_data: airData,
+        heart_data: heartData,
+        stomach_data: stomachData,
+        nervous_data: nervousData,
       };
       await patchCard(card_id, updateData);
       alert("card save");
@@ -72,7 +74,7 @@ const CardLayout = ({ card_id }) => {
   return (
     <>
       <Tabs>
-        <TabList>
+        <TabList overflowX="auto" overflowY="hidden">
           <Tab>Данные пациента</Tab>
           <Tab>Время</Tab>
           <Tab>Общие данные</Tab>
@@ -114,10 +116,24 @@ const CardLayout = ({ card_id }) => {
           <TabPanel>
             <SkinTabs skin={card.skin_data} onRefSave={skinRef} />
           </TabPanel>
-          <TabPanel></TabPanel>
-          <TabPanel></TabPanel>
-          <TabPanel></TabPanel>
-          <TabPanel></TabPanel>
+          <TabPanel>
+            <AirDataTabs air={card.air_data} onRefSave={airRef} />
+          </TabPanel>
+          <TabPanel>
+            <HeartDataTabs heart={card.heart_data} onRefSave={heartRef} />
+          </TabPanel>
+          <TabPanel>
+            <StomachDataTabs
+              stomach={card.stomach_data}
+              onRefSave={stomachRef}
+            />
+          </TabPanel>
+          <TabPanel>
+            <NervousDataTabs
+              nervous={card.nervous_data}
+              onRefSave={nervousRef}
+            />
+          </TabPanel>
           <TabPanel></TabPanel>
           <TabPanel></TabPanel>
           <TabPanel></TabPanel>
@@ -128,9 +144,7 @@ const CardLayout = ({ card_id }) => {
         </TabPanels>
       </Tabs>
       <button onClick={handleSave}>Сохранить всё</button>
-      <Button onClick={handleUpdateCheck}>
-        проверить данные перед отправкой
-      </Button>
+
       <Link to="/dispatcher-main">
         <Button>Назад</Button>
       </Link>
