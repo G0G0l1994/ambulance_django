@@ -10,6 +10,10 @@ import AirDataTabs from "./Tabs/AirDataTabs";
 import HeartDataTabs from "./Tabs/HeartDataTabs";
 import StomachDataTabs from "./Tabs/StomachDataTabs";
 import NervousDataTabs from "./Tabs/NervousDataTabs";
+import UrinaryDataTabs from "./Tabs/UrinaryDataTabs";
+import ECGDataTabs from "./Tabs/ECGDataTabs";
+import AidDataTabs from "./Tabs/AidDataTabs";
+import DiagnosisDataTabs from "./Tabs/DiagnosisDataTabs";
 
 import {
   Button,
@@ -34,6 +38,10 @@ const CardLayout = ({ card_id }) => {
   const heartRef = useRef();
   const stomachRef = useRef();
   const nervousRef = useRef();
+  const urinaryRef = useRef();
+  const ecgRef = useRef();
+  const aidRef = useRef();
+  const diagnosisRef = useRef();
 
   const handleSave = async () => {
     try {
@@ -46,6 +54,11 @@ const CardLayout = ({ card_id }) => {
       const heartData = heartRef.current?.();
       const stomachData = stomachRef.current?.();
       const nervousData = nervousRef.current?.();
+      const urinaryData = urinaryRef.current?.();
+      const ecgData = ecgRef.current?.();
+      const aidData = aidRef.current?.();
+      const paramsAfter = paramsAfterRef.current?.();
+      const diagnosisData = diagnosisRef.current?.();
 
       const updateData = {
         ...card,
@@ -58,6 +71,11 @@ const CardLayout = ({ card_id }) => {
         heart_data: heartData,
         stomach_data: stomachData,
         nervous_data: nervousData,
+        urinary_data: urinaryData,
+        ecg_data: ecgData,
+        aid_data: aidData,
+        parameters_after_data: paramsAfter,
+        diagnosis_data: diagnosisData,
       };
       await patchCard(card_id, updateData);
       alert("card save");
@@ -134,13 +152,27 @@ const CardLayout = ({ card_id }) => {
               onRefSave={nervousRef}
             />
           </TabPanel>
-          <TabPanel></TabPanel>
-          <TabPanel></TabPanel>
-          <TabPanel></TabPanel>
+          <TabPanel>
+            <UrinaryDataTabs
+              urinary={card.urinary_data}
+              onRefSave={urinaryRef}
+            />
+          </TabPanel>
+          <TabPanel>
+            <ECGDataTabs ecg={card.ecg_data} onRefSave={ecgRef} />
+          </TabPanel>
+          <TabPanel>
+            <AidDataTabs aid={card.aid_data} onRefSave={aidRef} />
+          </TabPanel>
           <TabPanel>
             <ParamsTabs params={card.parameters_after_data} />
           </TabPanel>
-          <TabPanel></TabPanel>
+          <TabPanel>
+            <DiagnosisDataTabs
+              diagnosis={card.diagnosis_data}
+              onSaveRef={diagnosisRef}
+            />
+          </TabPanel>
         </TabPanels>
       </Tabs>
       <button onClick={handleSave}>Сохранить всё</button>
