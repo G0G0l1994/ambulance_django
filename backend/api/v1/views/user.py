@@ -5,6 +5,7 @@ from django.contrib.auth.models import AnonymousUser
 
 from rest_framework import serializers, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
+ 
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
@@ -33,6 +34,7 @@ class UserAPIView(APIView):
                         "role": profile.role,
                         "session":profile.uuid_session,
                         "expire": profile.session_expire,
+                        "is_online": profile.is_online,
                         
                     }
                     for profile in Profile.objects.select_related('user').all()
@@ -56,6 +58,17 @@ class ProfileAPIView(APIView):
         serializer = self.serializer_class(profile)
         return Response(serializer.data, status=200)
     
+
+class DoctorListView(APIView):
+    renderer_classes = [JSONRenderer, BrowsableAPIRenderer]
+    parser_classes = [FormParser, MultiPartParser, JSONParser]
+    serializer_class = UserSerializer
+
+    def get(self, request):
+        doctors = Profile.objects.filter(role='doctor', is_online=True)
+        serializers = self.serializer_class(doctors, many=True)
+
+        return Response(serializers.data, status=status.HTTP_200_OK)
 
 class RegistrationAPIVeiw(APIView):
 
@@ -83,29 +96,31 @@ class LoginAPIView(APIView):
         password = request.data.get('password')
         user = authenticate(username=username,password=password)
         if user is not None and user.is_active and hasattr(user,'profile'):
+            user.profile.is_online = True
             if not user.profile.uuid_is_active:
                 user.profile.refresh_session()
+            user.profile.save()
             access_token = create_jwt_token(user)
             refresh_token = create_refresh_token(user)
-            res = Response({"success": True, "access_token": access_token, "refresh_token": refresh_token, "role": user.profile.role},status=status.HTTP_200_OK)
+            res = Response({"success": True, "access_token": access_token, "refresh_token": refresh_token, "role": user.profile.role, "is_online": user.profile.is_online},status=status.HTTP_200_OK)
             
             print(f"Setting cookies for user {user.username} {user.profile.role}")
             print(f"Access token: {access_token[:20]}...")
             
             res.set_cookie(key="access_token",
             value=access_token,
-            httponly=False,  # Временно отключаем для отладки
+            httponly=False,
             secure=False,
             samesite='Lax',
             path='/',
-            domain=None)  # Позволяем браузеру самому определить домен
+            domain=None)
             res.set_cookie(key="refresh_token",
             value=refresh_token,
-            httponly=False,  # Временно отключаем для отладки
+            httponly=False,
             secure=False,
             samesite='Lax',
             path='/',
-            domain=None)  # Позволяем браузеру самому определить домен
+            domain=None)
             
             print("Cookies set successfully")
             return res
@@ -121,6 +136,11 @@ class LogoutAPIView(APIView):
                 try:
                     payload = jwt.decode(refresh_token, key = settings.SECRET_KEY, algorithms=['HS256'])
                     jti = payload.get('jti')
+                    user_id = payload.get('user_id')
+                    if user_id:
+                        profile = Profile.objects.get(user_id=user_id)
+                        profile.is_online = False
+                        profile.save()
                     if jti:
                         RefreshToken.objects.filter(jti=jti).update(revoked=True)
                 except Exception:
@@ -167,7 +187,13 @@ class RefreshTokenObtain(APIView):
         access_token = create_jwt_token(user)
 
         response = Response({'access': access_token}, status=status.HTTP_200_OK)
-        response.set_cookie("access_token", access_token, httponly=False, secure=False, samesite="Lax", domain=None)
+        response.set_cookie(
+            "access_token", 
+            access_token, 
+            httponly=False,
+            secure=False,
+            samesite='Lax',
+            domain=None)
         return response
 
 class IsAuthenticatedAPIView(APIView):

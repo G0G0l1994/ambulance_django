@@ -1,4 +1,5 @@
 import axios from "axios";
+import { update } from "lodash";
 
 const BASE_URL = "/api";
 const LOGIN_URL = `${BASE_URL}/users/login/`;
@@ -9,6 +10,8 @@ const LOGOUT_URL = `${BASE_URL}/users/logout/`;
 const AUTH_URL = `${BASE_URL}/authenticated/`;
 const REGISTER_URL = `${BASE_URL}/registration/`;
 const PROFILE_URL = `${BASE_URL}/users/profile/`;
+const MKB_URL = `${BASE_URL}/mkb/`;
+const ONLINE_DOCTORS = `${BASE_URL}/users/doctor-list/`;
 
 export const login = async (username, password) => {
   const response = await axios.post(
@@ -40,6 +43,19 @@ export const getCardsList = async () => {
   }
 };
 
+export const getCardsDoctorList = async (user_id) => {
+  try {
+    const response = await axios.get(`${CARDS_URL}doctor/${user_id}`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    return callRefresh(error, () => {
+      return axios.get(CARDS_URL, { withCredentials: true });
+    });
+  }
+};
+
 export const getCard = async (card_id) => {
   try {
     const response = await axios.get(`${CARDS_URL}${card_id}/`, {
@@ -48,13 +64,27 @@ export const getCard = async (card_id) => {
     return response.data;
   } catch (error) {
     return callRefresh(error, () => {
-      return axios.get(`${CARDS_URL}${card_id}/`, { withCredentials: true });
+      return axios.get(`${CARDS_URL}${card_id}/`, {
+        withCredentials: true,
+      });
     });
+  }
+};
+
+export const getMKB = async () => {
+  try {
+    const response = await axios.get(`${MKB_URL}`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    return await axios.get(`${MKB_URL}`, { withCredentials: true });
   }
 };
 
 export const patchCard = async (card_id, update_data) => {
   try {
+    
     const response = await axios.put(
       `${CARDS_URL}${card_id}/update/`,
       update_data,
@@ -147,7 +177,6 @@ export const register = async (
 export const getProfile = async () => {
   try {
     const profile = await axios.get(PROFILE_URL, { withCredentials: true });
-    console.log(profile.data);
     return profile.data;
   } catch (error) {
     return callRefresh(error, () => {
@@ -164,5 +193,16 @@ export const cardCreate = async (formData) => {
     return response.data;
   } catch (error) {
     throw error;
+  }
+};
+
+export const getOnlineDoctors = async () => {
+  try {
+    const response = await axios.get(ONLINE_DOCTORS, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    return callRefresh(error, () => {
+      axios.get(ONLINE_DOCTORS, { withCredentials: true });
+    });
   }
 };

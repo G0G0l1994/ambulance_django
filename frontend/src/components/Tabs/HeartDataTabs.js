@@ -8,7 +8,7 @@ import {
   Textarea,
   Checkbox,
 } from "@chakra-ui/react";
-import { SelectChoice } from "../choice.field";
+import { SelectChoice } from "../fields/choice.field";
 import {
   RHYTHMIC_CHOICES,
   TONE_OF_HEART_CHOICES,

@@ -1,14 +1,29 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import { Grid, GridItem, Textarea, Text, Select } from "@chakra-ui/react";
 
+import { debounce } from "lodash";
+
 const ECGDataTabs = ({ ecg, onRefSave }) => {
   const [localData, setLocalData] = useState(ecg);
-
+  const debouncedUpdate = useCallback(
+    debounce((newData) => {
+      setLocalData(newData);
+    }, 500),
+    []
+  );
   const handleChange = (field, value) => {
-    setLocalData((prev) => ({ ...prev, [field]: value }));
+    setLocalData((prev) => {
+      const newData = { ...prev, [field]: value };
+      debouncedUpdate(newData);
+      console.log(newData)
+      return newData;
+    });
   };
 
+  useEffect(() => {
+    debouncedUpdate.cancel();
+  }, []);
   useEffect(() => {
     if (onRefSave) {
       onRefSave.current = () => localData;

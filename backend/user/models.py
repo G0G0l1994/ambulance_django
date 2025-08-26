@@ -25,6 +25,7 @@ class Profile(models.Model):
     session_expire = models.DateTimeField(
         default= get_expire_time(), verbose_name="Срок действия сессии"
     )
+    is_online = models.BooleanField(default=False)
 
     @property
     def uuid_is_active(self):

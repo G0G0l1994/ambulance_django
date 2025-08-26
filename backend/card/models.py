@@ -71,7 +71,7 @@ class CommonData(models.Model):
     anamnesis = models.TextField(null=True)
     general_assessment = models.CharField(max_length=100, null=True, choices=GENERAL_ASSESSMENT_CHOICES,default="satisfactory")
     сonsciousness = models.CharField(max_length=100, null=True, choices=CONSCIOUSNESS_CHOICES,default="clear")  # сознание
-    glasgow_scale = models.IntegerField(null=True)  # шкала Глазго
+    glasgow_scale = models.IntegerField(null=True, default=15)  # шкала Глазго
     body_position = models.CharField(max_length=100, null=True, choices=BODY_POSITION_CHOICES, default='active')  # исправлено
     normal_blood_pressure_systolic = models.IntegerField(null=True,default=DEFAULT_VALUES['normal_blood_pressure_systolic'])
     normal_blood_pressure_diastolic = models.IntegerField(null=True, default=DEFAULT_VALUES['normal_blood_pressure_diastolic'])
@@ -83,14 +83,14 @@ class CommonData(models.Model):
 class ParametersBefore(models.Model):
     # показатели до
     card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='parameters_before_data')
-    temperature = models.FloatField(null=True)
-    respiratory_rate = models.IntegerField(null=True)
-    heartbite = models.IntegerField(null=True)
-    saturation = models.IntegerField(null=True)
-    pulse = models.IntegerField(null=True)
-    blood_pressure_systolic = models.IntegerField(null=True)
-    blood_pressure_diastolic = models.IntegerField(null=True)
-    blood_glucose = models.FloatField(null=True)
+    temperature = models.FloatField(null=True, default=36.6)
+    respiratory_rate = models.IntegerField(null=True, default=16)
+    heartbite = models.IntegerField(null=True, default=60)
+    saturation = models.IntegerField(null=True, default=98)
+    pulse = models.IntegerField(null=True, default=60)
+    blood_pressure_systolic = models.IntegerField(null=True, default=120)
+    blood_pressure_diastolic = models.IntegerField(null=True, default=80)
+    blood_glucose = models.FloatField(null=True, default=5.5)
 
     class Meta:
         db_table = "ParametersBefore"
@@ -115,7 +115,7 @@ class AirData(models.Model):
     card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='air_data')
     respiratory_type = models.CharField(max_length=100, null=True,choices=RESPIRATORY_TYPE_CHOICES,default='vesicular')
     wheezing = models.CharField(max_length=100, null=True,choices=WHEEZING_CHOICES,default='none')  # хрипы
-    wheezing_localisation = models.CharField(max_length=100, null=True,)  # локализация хрипов
+    wheezing_localisation = models.CharField(max_length=100, null=True, default="Нет")  # локализация хрипов
     dyspnea = models.CharField(max_length=100, null=True,choices=DYSPNEA_CHOICES,default='none')  # одышка
 
     class Meta:
@@ -139,7 +139,7 @@ class StomachData(models.Model):
     # живот
     card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='stomach_data')
     liver = models.CharField(max_length=100, null=True, default=DEFAULT_VALUES['liver'])  # печень
-    pain_stomach = models.CharField(max_length=100, null=True)
+    pain_stomach = models.CharField(max_length=100, null=True, default="painless")
     characteristic_stomach = models.CharField(max_length=100, null=True,choices=PAIN_STOMACH_CHOICES,default='painless')
     involved_in_the_act_of_breathing = models.BooleanField(null=True,default=True)
     formed_type_stool = models.CharField(max_length=100, null=True,choices=FORMED_TYPE_STOOL_CHOICES,default='formed')
@@ -211,23 +211,31 @@ class AIDData(models.Model):
 class ParametersAfter(models.Model):
     # показатели после    
     card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='parameters_after_data')
-    temperature = models.FloatField(null=True)
-    respiratory_rate = models.IntegerField(null=True)
-    heartbite = models.IntegerField(null=True)
-    saturation = models.IntegerField(null=True)
-    pulse = models.IntegerField(null=True)
-    blood_pressure_systolic = models.IntegerField(null=True)
-    blood_pressure_diastolic = models.IntegerField(null=True)
-    blood_glucose = models.FloatField(null=True)
+    temperature = models.FloatField(null=True,default=36.6)
+    respiratory_rate = models.IntegerField(null=True,default=16)
+    heartbite = models.IntegerField(null=True,default=60)
+    saturation = models.IntegerField(null=True,default=98)
+    pulse = models.IntegerField(null=True,default=60)
+    blood_pressure_systolic = models.IntegerField(null=True, default=120)
+    blood_pressure_diastolic = models.IntegerField(null=True, default=80)
+    blood_glucose = models.FloatField(null=True, default=5.5)
 
     class Meta:
         db_table = "ParametersAfter"
+
+
+class MKB(models.Model):
+    code = models.CharField(max_length=256, null=True)
+
+    class Meta:
+        db_table = "MKB"
+
 
 class DiagnosisData(models.Model):
     # диагноз
     card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='diagnosis_data')
     diagnosis = models.CharField(max_length=100, null=True)
-    mkb = models.CharField(max_length=100, null=True)
+    mkb = models.CharField(max_length=256, null=True)
 
     class Meta:
         db_table = "DiagnosisData"

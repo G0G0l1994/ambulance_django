@@ -51,9 +51,9 @@ const MainLayout = () => {
                         </Link>
                     )}
                     {profile?.role === "doctor" && (
-                        <Link to="/history">
+                        <Link to={`/history/${profile.id}`}>
                             <Button colorScheme="blue" variant="solid">
-                                Карты
+                                Мои карты
                             </Button>
                         </Link>
                     )}

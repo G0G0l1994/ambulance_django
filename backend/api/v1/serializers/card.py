@@ -5,7 +5,7 @@ from rest_framework import serializers
 from card.models import (
     Card,Patient,DateTimeData,ParametersBefore,ParametersAfter,CommonData,
     SkinData,AirData,HeartData,StomachData,NervousData,
-    UrinaryData,ECGData,AIDData,DiagnosisData)
+    UrinaryData,ECGData,AIDData,DiagnosisData, MKB)
 from api.v1.serializers.user import UserSerializer
 
 
@@ -157,6 +157,11 @@ class AIDDataSerializer(serializers.ModelSerializer):
             "id","aid","aid_effect"
         ]
 
+class MKBSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MKB
+        fields = ['id', 'code']
+
 class DiagnosisDataSerializer(serializers.ModelSerializer):
     
     class Meta:
@@ -165,10 +170,10 @@ class DiagnosisDataSerializer(serializers.ModelSerializer):
            "id", "diagnosis","mkb",
         ]
 
+
 class CardListSerializer(serializers.ModelSerializer):
     doctor = UserSerializer(source="doctor_id.profile", read_only=True)
     patient = PatientSerializer(source='patient_id',read_only=True)
-    diagnosis_data = serializers.SerializerMethodField()
 
     class Meta:
         model = Card
@@ -176,9 +181,7 @@ class CardListSerializer(serializers.ModelSerializer):
             'id', 'doctor_id', 'doctor', 'patient_id', 'patient', "address",
             'crew', 'cause', 'status', 'diagnosis_data'
         ]
-    def get_diagnosis_data(self,obj):
-        diagnosis = DiagnosisData.objects.filter(card_id = obj).first()
-        return DiagnosisDataSerializer(diagnosis).data if diagnosis else None
+    
 
 class CardDetailSerializer(serializers.ModelSerializer):
     doctor = UserSerializer(source='doctor_id.profile', read_only=True)
@@ -248,7 +251,7 @@ class CardCreateSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
     def create(self,validated_data):
-        print(validated_data)
+        
         patient_data = {
             'first_name': validated_data.pop('first_name'),
             'last_name': validated_data.pop('last_name'),
@@ -335,6 +338,7 @@ class CardCreateSerializer(serializers.ModelSerializer):
             AIDData.objects.create(card=card)
                 
         if diagnosis_data:
+            
             DiagnosisData.objects.create(card=card, **diagnosis_data)
         else:
             DiagnosisData.objects.create(card=card)
@@ -342,7 +346,7 @@ class CardCreateSerializer(serializers.ModelSerializer):
         return card
 
 class CardUpdateSerializer(serializers.ModelSerializer):
-    doctor = UserSerializer(source='doctor_id.profile', read_only=True)
+    doctor = UserSerializer(source='doctor_id.profile')
     patient = PatientSerializer(source='patient_id')
     datetime_data = DateTimeDataSerializer(required = False)
     common_data = CommonDataSerializer(required = False)
@@ -380,7 +384,9 @@ class CardUpdateSerializer(serializers.ModelSerializer):
             id=instance.patient_id.id if instance.patient_id else None,
             defaults=patient_data
         )
-        instance.patient_id = patient
+            instance.patient_id = patient
+        else: 
+            pass
         for attr, value in validated_data.items():
             if attr not in [
             'datetime_data', 'common_data', 'parameters_before_data',
@@ -389,6 +395,7 @@ class CardUpdateSerializer(serializers.ModelSerializer):
             'parameters_after_data', 'diagnosis_data', 'patient'
             ]:
                 setattr(instance,attr,value)
+        instance.save()
         related_serializers = {
             "patient": Patient,
             'datetime_data':DateTimeData, 
@@ -401,7 +408,7 @@ class CardUpdateSerializer(serializers.ModelSerializer):
             'nervous_data': NervousData, 
             'urinary_data': UrinaryData, 
             'ecg_data': ECGData,
-             'aid_data': AIDData,
+            'aid_data': AIDData,
             'parameters_after_data': ParametersAfter, 
             'diagnosis_data':DiagnosisData
         }
@@ -410,4 +417,5 @@ class CardUpdateSerializer(serializers.ModelSerializer):
             if field in validated_data:
                 model.objects.update_or_create(card=instance,defaults=validated_data[field])
         
+
         return instance

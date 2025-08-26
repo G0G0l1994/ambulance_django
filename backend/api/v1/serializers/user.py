@@ -43,12 +43,15 @@ class UserSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(source='user.first_name')
     last_name = serializers.CharField(source='user.last_name')
     email = serializers.EmailField(source='user.email')
+    is_online = serializers.BooleanField()
     surname = serializers.CharField()
     role = serializers.CharField()
 
     class Meta:
         model = Profile
         fields = [
-            'id', 'username', 'first_name', 'last_name', 'email',  # из User
-            'surname', 'role'  # из Profile
+            'id', 'username', 'first_name', 'last_name', 'email', # из User
+            'surname', 'role', 'is_online'  # из Profile
         ]
+
+    

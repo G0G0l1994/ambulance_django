@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
-import { SelectChoice } from "../choice.field";
+import { SelectChoice } from "../fields/choice.field";
 import {
   PAIN_STOMACH_CHOICES,
   CHARACTERISTIC_STOMACH_CHOICES,

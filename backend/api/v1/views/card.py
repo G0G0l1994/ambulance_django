@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 
-from api.v1.serializers.card import CardDetailSerializer, CardCreateSerializer,CardUpdateSerializer, CardListSerializer
-from card.models import Card
+from api.v1.serializers.card import CardDetailSerializer, CardCreateSerializer,CardUpdateSerializer, CardListSerializer, MKBSerializer
+from card.models import Card,MKB
 
 
 class CardDetailAPIView(APIView):
@@ -71,7 +71,7 @@ class CardUpdateAPIVView(APIView):
             return Response({'detail': "Card not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = self.serializer_class(card, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.update(card, serializer.validated_data)
+            serializer.save()
             print(f"card {card_id} updated")
             return Response(serializer.data, status=status.HTTP_200_OK)
         print(serializer.data)
@@ -80,8 +80,55 @@ class CardUpdateAPIVView(APIView):
 class CardListAPIView(APIView):
     permission_classes = [IsAuthenticated]
     
-    def get(self,request):
+    def get(self,request, user_id = None):
 
-        cards = Card.objects.all().order_by('-id')
+        if user_id:
+            cards = Card.objects.filter(doctor_id=user_id).select_related(
+            'patient_id',
+            'doctor_id',
+            'datetime_data',
+            'common_data',
+            'parameters_before_data',
+            'parameters_after_data',
+            'skin_data',
+            'air_data',
+            'heart_data',
+            'stomach_data',
+            'nervous_data',
+            'urinary_data',
+            'ecg_data',
+            'aid_data',
+            'diagnosis_data',
+            ).prefetch_related().order_by('-id')
+            serializer = CardListSerializer(cards,many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        cards = Card.objects.select_related(
+            'patient_id',
+            'datetime_data',
+            'common_data',
+            'parameters_before_data',
+            'parameters_after_data',
+            'skin_data',
+            'air_data',
+            'heart_data',
+            'stomach_data',
+            'nervous_data',
+            'urinary_data',
+            'ecg_data',
+            'aid_data',
+            'diagnosis_data',
+            ).prefetch_related().all().order_by('-id')
         serializer = CardListSerializer(cards,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class MKBListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request):
+
+        mkb_list = MKB.objects.all()
+        serializer = MKBSerializer(mkb_list, many=True)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+
+ 

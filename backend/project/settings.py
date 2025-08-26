@@ -56,6 +56,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "project.urls"
 
+ 
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -109,8 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -143,6 +144,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "http://192.168.31.39:3000",
+    "http://192.168.31.39:8000",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -162,4 +165,13 @@ CORS_ALLOW_HEADERS = [
 
 CORS_EXPOSE_HEADERS = [
     'set-cookie',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://192.168.31.39:3000",
+    "http://192.168.31.39:8000",
 ]

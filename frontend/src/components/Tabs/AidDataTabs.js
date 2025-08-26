@@ -1,20 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Textarea, Box, Text } from "@chakra-ui/react";
-import { SelectChoice } from "../choice.field";
+import { SelectChoice } from "../fields/choice.field";
 import { AID_EFFECTS } from "../../constants/select-text";
+import { debounce } from "lodash";
 
-const AidDataTabs = ({ aid, onSaveRef }) => {
-  const [localData, setLocalData] = useState(aid);
+const AidDataTabs = ({ aid_data, onRefSave }) => {
+  const [localData, setLocalData] = useState(aid_data);
 
   const handleChange = (field, value) => {
-    setLocalData((prev) => ({ ...prev, [field]: value }));
+    setLocalData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   useEffect(() => {
-    if (onSaveRef) {
-      onSaveRef.current = () => localData;
+    if (onRefSave) {
+      onRefSave.current = () => localData;
     }
-  }, [localData, onSaveRef]);
+  }, [localData, onRefSave]);
 
   return (
     <Box>

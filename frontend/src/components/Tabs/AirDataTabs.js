@@ -1,12 +1,8 @@
-import { useState, useEffect } from "react";
-import {
-  HStack,
-  Input,
-  Text,
-  Grid,
-  GridItem,
-} from "@chakra-ui/react";
-import { SelectChoice } from "../choice.field";
+import { useState, useEffect, useCallback } from "react";
+import { HStack, Input, Text, Grid, GridItem } from "@chakra-ui/react";
+import debounce from "lodash/debounce";
+import { SelectChoice } from "../fields/choice.field";
+
 import {
   RESPIRATORY_TYPE_CHOICES,
   WHEEZING_CHOICES,
@@ -16,10 +12,23 @@ import {
 const AirDataTabs = ({ air, onRefSave }) => {
   const [localData, setLocalData] = useState(air);
 
-  const handleChange = (field, value) => {
-    setLocalData((prev) => ({ ...prev, [field]: value }));
-  };
+  const debounceUpdate = useCallback(
+    debounce((newData) => {
+      setLocalData(newData);
+    }, 500),
+    []
+  );
 
+  const handleChange = (field, value) => {
+    setLocalData((prev) => {
+      const newData = { ...prev, [field]: value };
+      debounceUpdate(newData);
+      return newData;
+    });
+  };
+  useEffect(() => {
+    debounceUpdate.cancel();
+  }, []);
   useEffect(() => {
     if (onRefSave) {
       onRefSave.current = () => localData;
@@ -34,7 +43,7 @@ const AirDataTabs = ({ air, onRefSave }) => {
           options={RESPIRATORY_TYPE_CHOICES}
           defaultValue={localData.respiratory_type}
           onChange={(e) => {
-            handleChange("respiratory_type".e.target.value);
+            handleChange("respiratory_type", e.target.value);
           }}
         />
         <SelectChoice
@@ -42,7 +51,7 @@ const AirDataTabs = ({ air, onRefSave }) => {
           options={WHEEZING_CHOICES}
           defaultValue={localData.wheezing}
           onChange={(e) => {
-            handleChange("wheezing".e.target.value);
+            handleChange("wheezing", e.target.value);
           }}
         />
       </GridItem>
@@ -52,7 +61,7 @@ const AirDataTabs = ({ air, onRefSave }) => {
           options={DYSPNEA_CHOICES}
           defaultValue={localData.dyspnea}
           onChange={(e) => {
-            handleChange("wheezing", e.target.value);
+            handleChange("dyspnea", e.target.value);
           }}
         />
         <HStack p={2}>

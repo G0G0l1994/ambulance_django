@@ -77,6 +77,7 @@ const CardLayout = ({ card_id }) => {
         parameters_after_data: paramsAfter,
         diagnosis_data: diagnosisData,
       };
+      console.log(updateData);
       await patchCard(card_id, updateData);
       alert("card save");
     } catch (error) {
@@ -162,15 +163,18 @@ const CardLayout = ({ card_id }) => {
             <ECGDataTabs ecg={card.ecg_data} onRefSave={ecgRef} />
           </TabPanel>
           <TabPanel>
-            <AidDataTabs aid={card.aid_data} onRefSave={aidRef} />
+            <AidDataTabs aid_data={card.aid_data} onRefSave={aidRef} />
           </TabPanel>
           <TabPanel>
-            <ParamsTabs params={card.parameters_after_data} />
+            <ParamsTabs
+              params={card.parameters_after_data}
+              onRefSave={paramsAfterRef}
+            />
           </TabPanel>
           <TabPanel>
             <DiagnosisDataTabs
               diagnosis={card.diagnosis_data}
-              onSaveRef={diagnosisRef}
+              onRefSave={diagnosisRef}
             />
           </TabPanel>
         </TabPanels>

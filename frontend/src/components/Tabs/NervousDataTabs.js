@@ -1,13 +1,5 @@
-import {
-  Grid,
-  GridItem,
-  Text,
-  Checkbox,
-  HStack,
-  VStack,
-  Stack,
-} from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { Grid, GridItem, Text, Checkbox, Stack } from "@chakra-ui/react";
+import { useEffect, useState, useCallback } from "react";
 import {
   BEHAVIOUR_CHOICES,
   REACTION_TO_LIGHT,
@@ -16,7 +8,7 @@ import {
   PARALYSIS_CHOICES,
   SENSITIVE_CHOICES,
 } from "../../constants/select-text";
-import { SelectChoice } from "../choice.field";
+import { SelectChoice } from "../fields/choice.field";
 
 const NervousDataTabs = ({ nervous, onRefSave }) => {
   const [localData, setLocalData] = useState(nervous);

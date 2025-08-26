@@ -13,7 +13,6 @@ export const useCard = (card_id) => {
 
         if (card) {
           setCard(card);
-          console.log(` from hook useCard`, card);
         } else {
           setError("Карта не найдена");
         }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Grid, GridItem, HStack, Text, Checkbox, Box } from "@chakra-ui/react";
-import { SelectChoice } from "../choice.field";
+import { SelectChoice } from "../fields/choice.field";
 import {
   PAINLESS_URINATION_CHOICES,
   CHARACTERISTIC_URINATION_CHOICES,

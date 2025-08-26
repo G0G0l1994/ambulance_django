@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { is_autenticated, register } from "../endpoints/api";
+import { is_autenticated, register, getProfile } from "../endpoints/api";
 
 const AuthContext = createContext();
 
