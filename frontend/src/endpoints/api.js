@@ -12,6 +12,7 @@ const REGISTER_URL = `${BASE_URL}/registration/`;
 const PROFILE_URL = `${BASE_URL}/users/profile/`;
 const MKB_URL = `${BASE_URL}/mkb/`;
 const ONLINE_DOCTORS = `${BASE_URL}/users/doctor-list/`;
+const CREW_LIST = `${BASE_URL}/crew/list/`;
 
 export const login = async (username, password) => {
   const response = await axios.post(
@@ -84,7 +85,6 @@ export const getMKB = async () => {
 
 export const patchCard = async (card_id, update_data) => {
   try {
-    
     const response = await axios.put(
       `${CARDS_URL}${card_id}/update/`,
       update_data,
@@ -98,6 +98,17 @@ export const patchCard = async (card_id, update_data) => {
       return axios.put(`${CARDS_URL}${card_id}/update/`, update_data, {
         withCredentials: true,
       });
+    });
+  }
+};
+
+export const getCrewList = async () => {
+  try {
+    const response = await axios.get(CREW_LIST, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    return callRefresh(error, () => {
+      return axios.get(CREW_LIST, { withCredentials: true });
     });
   }
 };

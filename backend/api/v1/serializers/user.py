@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from user.models import Profile
+from user.models import Profile, Crew
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -54,4 +54,27 @@ class UserSerializer(serializers.ModelSerializer):
             'surname', 'role', 'is_online'  # из Profile
         ]
 
+class CrewSerializer(serializers.ModelSerializer):
+    crew_number = serializers.CharField(allow_null=True)
+    main = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), allow_null =True, required =False)
+    secondary = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), allow_null =True, required =False)
+    main_display = serializers.SerializerMethodField(allow_null=True)
+    secondary_display = serializers.SerializerMethodField(allow_null=True)
+
+    class Meta:
+        model = Crew
+        fields = [
+            'id','crew_number', 'main', 'secondary', 'main_display', 'secondary_display'
+        ]
+
+    def _get_full_name(self, user):
+        if user and hasattr(user, 'profile'):
+            return user.profile.full_name()
+        return None
+    
+    def get_main_display(self, obj):
+        return self._get_full_name(obj.main)
+    
+    def get_secondary_display(self, obj):
+        return self._get_full_name(obj.secondary)
     

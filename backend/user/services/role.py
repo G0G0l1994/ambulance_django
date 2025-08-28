@@ -2,7 +2,7 @@ from django.core.exceptions import PermissionDenied
 
 
 def get_role_redirect(profile):
-    if profile.role == "doctors":
+    if profile.role == "doctors" or profile.role == "paramedic":
         return "doctors"
     elif profile.role == "dispatchers":
         return "dispatchers"

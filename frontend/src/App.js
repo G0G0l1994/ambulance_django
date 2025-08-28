@@ -16,6 +16,7 @@ import { AuthProvider } from "./contexts/useAuth";
 import PrivateRoute from "./components/private_route";
 import Register from "./routes/register";
 import DocumentTitle from "./components/DocumentTitle";
+import { CrewList } from "./routes/crew-list";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
               <Route path="/dispatcher-main" element={<DispatcherMain />} />
               <Route path="/cards/:card_id" element={<CardDetail />} />
               <Route path="/cards/:card_id/update" element={<CardUpdate />} />
+              <Route path="/crew/list/" element={<CrewList />} />
             </Route>
 
             <Route path="/login" element={<Login />} />

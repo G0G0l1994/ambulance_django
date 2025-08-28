@@ -35,12 +35,12 @@ export const CardTable = ({ columns, cards, onCardUpdate }) => {
     fetchDoctors();
   }, []);
 
-//   const handleDoctorAssigned = () => {
-//     // Если нужно обновить список карт после назначения врача
-//     if (onCardUpdate) {
-//       onCardUpdate();
-//     }
-//   };
+  //   const handleDoctorAssigned = () => {
+  //     // Если нужно обновить список карт после назначения врача
+  //     if (onCardUpdate) {
+  //       onCardUpdate();
+  //     }
+  //   };
 
   return (
     <TableContainer>

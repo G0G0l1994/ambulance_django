@@ -74,7 +74,6 @@ class CardUpdateAPIVView(APIView):
             serializer.save()
             print(f"card {card_id} updated")
             return Response(serializer.data, status=status.HTTP_200_OK)
-        print(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CardListAPIView(APIView):

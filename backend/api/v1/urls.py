@@ -18,7 +18,10 @@ urlpatterns = [
     path('registration/', RegistrationAPIVeiw.as_view()),
     path('authenticated/', IsAuthenticatedAPIView.as_view()),
     path('mkb/', MKBListAPIView.as_view()),
-    path('users/doctor-list/', DoctorListView.as_view())
+    path('users/doctor-list/', DoctorListView.as_view()),
+    path('crew/list/', CrewListAPIView.as_view()),
+    path('crew/create/', CrewCreateAPIVeiw.as_view()),
+    path('crew/<int:crew_id>/update/',CrewUpdateApiView.as_view()), 
 
     ]
 

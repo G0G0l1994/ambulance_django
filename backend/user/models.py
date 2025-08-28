@@ -14,7 +14,7 @@ def get_token_expire_time():
     return now() + timedelta(days=7)
 
 class Profile(models.Model):
-    ROLE_CHOICE = [("doctor", "Врач"), ("dispatcher", "Диспетчер")]
+    ROLE_CHOICE = [("doctor", "Врач"), ("dispatcher", "Диспетчер"), ("paramedic", "Фельдшер")]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     surname = models.CharField(max_length=256, blank=False, verbose_name="Отчество")
@@ -26,6 +26,9 @@ class Profile(models.Model):
         default= get_expire_time(), verbose_name="Срок действия сессии"
     )
     is_online = models.BooleanField(default=False)
+
+    def full_name(self):
+         return f"{self.user.first_name} {self.surname} {self.user.last_name}"
 
     @property
     def uuid_is_active(self):
@@ -73,4 +76,16 @@ class RefreshToken(models.Model):
 
         indexes = [models.Index(fields=["jti"]), models.Index(fields=["revoked"])]
 
-        
+
+class Crew(models.Model):
+    crew_number = models.CharField(null=True)
+    main = models.OneToOneField(User, on_delete=models.CASCADE, null=True, related_name='main')
+    secondary = models.OneToOneField(User, on_delete=models.CASCADE, null=True, related_name='secondary')
+
+
+    def __str__(self):
+          return f"Бригада № {self.crew_number} старший: {self.main} "
+    
+    class Meta:
+        db_table = 'Crew'
+        indexes = [models.Index(fields=['crew_number'])]

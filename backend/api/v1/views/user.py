@@ -1,19 +1,19 @@
 import jwt
 
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import AnonymousUser
 
-from rest_framework import serializers, status
-from rest_framework.permissions import AllowAny, IsAuthenticated
+
+from rest_framework import status
+from rest_framework.permissions import AllowAny
  
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 
-from api.v1.serializers.user import UserCreateSerializer, UserSerializer
+from api.v1.serializers.user import UserCreateSerializer, UserSerializer, CrewSerializer
 from project import settings
-from user.models import Profile, RefreshToken
+from user.models import Profile, RefreshToken, Crew
 from user.services.auth import create_jwt_token, create_refresh_token
 
 
@@ -69,6 +69,49 @@ class DoctorListView(APIView):
         serializers = self.serializer_class(doctors, many=True)
 
         return Response(serializers.data, status=status.HTTP_200_OK)
+
+class CrewCreateAPIVeiw(APIView):
+    renderer_classes = [JSONRenderer, BrowsableAPIRenderer]
+    parser_classes = [FormParser, MultiPartParser,JSONParser]
+    serializer_class = CrewSerializer
+
+    def post(self,request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print(f"CrewSerializer error: {serializer.error}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CrewUpdateApiView(APIView):
+    renderer_classes = [JSONRenderer, BrowsableAPIRenderer]
+    parser_classes = [FormParser, MultiPartParser,JSONParser]
+    serializer_class = CrewSerializer
+
+    def put(self, request, crew_id):
+        try:
+            crew = Crew.objects.get(id=crew_id)
+        except Crew.DoesNotExist:
+            return Response({'detail': 'Crew not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = self.serializer_class(crew, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            print(f"crew {crew.crew_number} updated")
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class CrewListAPIView(APIView):
+    renderer_classes = [JSONRenderer, BrowsableAPIRenderer]
+    parser_classes = [FormParser, MultiPartParser,JSONParser]
+    serializer_class = CrewSerializer
+
+    def get(self,request):
+        crew_list = Crew.objects.select_related("main__profile", "secondary__profile").all()
+        serializer = self.serializer_class(crew_list, many=True)
+        print(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class RegistrationAPIVeiw(APIView):
 
