@@ -74,7 +74,9 @@ const MainLayout = () => {
           )}
         </HStack>
         <Spacer />
-        {profile && <Text mr={4}>Пользователь: {profile.username}</Text>}
+        {profile && (
+          <Text mr={4}>Пользователь: {profile.full_name_display}</Text>
+        )}
         <Button colorScheme="red" onClick={handleLogout}>
           Logout
         </Button>

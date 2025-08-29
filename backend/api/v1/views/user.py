@@ -20,27 +20,14 @@ from user.services.auth import create_jwt_token, create_refresh_token
 class UserAPIView(APIView):
     renderer_classes = [JSONRenderer, BrowsableAPIRenderer]
     parser_classes = [FormParser, MultiPartParser, JSONParser]
-    serializer_class = UserCreateSerializer
+    serializer_class = UserSerializer
     
     
     def get(self,request, format = None):
-        output = [
-            {
-                        "username": profile.user.username,
-                        "email": profile.user.email,
-                        "first_name": profile.user.first_name,
-                        "surname": profile.surname,
-                        "last_name": profile.user.last_name,
-                        "role": profile.role,
-                        "session":profile.uuid_session,
-                        "expire": profile.session_expire,
-                        "is_online": profile.is_online,
-                        
-                    }
-                    for profile in Profile.objects.select_related('user').all()
-        ]
+        user_list = Profile.objects.select_related('user').all()
+        serializer = self.serializer_class(user_list, many=True)
 
-        return Response(output)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ProfileAPIView(APIView):
 

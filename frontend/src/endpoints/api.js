@@ -1,5 +1,4 @@
 import axios from "axios";
-import { update } from "lodash";
 
 const BASE_URL = "/api";
 const LOGIN_URL = `${BASE_URL}/users/login/`;
@@ -13,6 +12,7 @@ const PROFILE_URL = `${BASE_URL}/users/profile/`;
 const MKB_URL = `${BASE_URL}/mkb/`;
 const ONLINE_DOCTORS = `${BASE_URL}/users/doctor-list/`;
 const CREW_LIST = `${BASE_URL}/crew/list/`;
+const DOCTORS_LIST = `${BASE_URL}/users/`;
 
 export const login = async (username, password) => {
   const response = await axios.post(
@@ -30,6 +30,18 @@ export const refreshToken = async () => {
   } catch (error) {
     console.error("Refresh token failed:", error);
     return false;
+  }
+};
+
+export const getDoctorsList = async () => {
+  try {
+    const response = await axios.get(DOCTORS_LIST, { withCredentials: true });
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    return callRefresh(error, () => {
+      return axios.get(DOCTORS_LIST, { withCredentials: true });
+    });
   }
 };
 
@@ -109,6 +121,23 @@ export const getCrewList = async () => {
   } catch (error) {
     return callRefresh(error, () => {
       return axios.get(CREW_LIST, { withCredentials: true });
+    });
+  }
+};
+
+export const updateCrew = async (crew_id, update_data) => {
+  try {
+    const response = await axios.put(
+      BASE_URL + `/crew/${crew_id}/update/`,
+      update_data,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    return callRefresh(error, () => {
+      return axios.put(BASE_URL + `/${crew_id}/update`, update_data, {
+        withCredentials: true,
+      });
     });
   }
 };

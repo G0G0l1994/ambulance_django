@@ -46,13 +46,21 @@ class UserSerializer(serializers.ModelSerializer):
     is_online = serializers.BooleanField()
     surname = serializers.CharField()
     role = serializers.CharField()
+    full_name_display = serializers.SerializerMethodField(allow_null=True) 
 
     class Meta:
         model = Profile
         fields = [
             'id', 'username', 'first_name', 'last_name', 'email', # из User
-            'surname', 'role', 'is_online'  # из Profile
+            'surname', 'role', 'is_online',# из Profile
+            'full_name_display'
+                
         ]
+    
+    
+    
+    def get_full_name_display(self, obj):
+        return obj.full_name()
 
 class CrewSerializer(serializers.ModelSerializer):
     crew_number = serializers.CharField(allow_null=True)
