@@ -6,6 +6,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
+from django_eventstream import send_event
+
 
 from api.v1.serializers.card import CardDetailSerializer, CardCreateSerializer,CardUpdateSerializer, CardListSerializer, MKBSerializer
 from card.models import Card,MKB
@@ -130,4 +132,46 @@ class MKBListAPIView(APIView):
         return Response(serializer.data, status.HTTP_200_OK)
 
 
- 
+class DispatchCardToCrewAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        card_id = request.data.get("card_id")
+        crew_number = request.data.get("crew_number")
+
+        if not card_id or not crew_number:
+            return Response(
+                {"detail": "card_id and crew_number is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+                )
+        try:
+            card = Card.objects.get(id=card_id)
+        except Card.DoesNotExist:
+            return Response(
+                {"detail": "Card not found"}, 
+                status=status.HTTP_400_BAD_REQUEST
+                )
+        card.crew = int(crew_number)
+        card.status = 'handed_crew'
+        card.save(update_fields=['crew', "status"])
+
+        channel = f"crew-{crew_number}"
+        payload = {
+            "type": "card_assigned",
+            "card_id" : card.id,
+            "crew_number": crew_number,
+            "status": card.status,
+            "address": card.address,
+            "cause": card.cause,
+            "detail_card": f"/cards/{card.id}/update",
+            "update_api_url": f"/api/cards/{card.id}/update/",
+            "accept_next_status": "in_progress"
+
+        }
+        send_event(channel, "new_call", payload)
+        return Response(
+            {"success": True, "event": payload}, 
+            status=status.HTTP_200_OK
+            )
+
+        

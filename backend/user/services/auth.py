@@ -41,22 +41,21 @@ def validate_jwt_token(token) -> Optional[User]:
         return None
 
 
-# def user_auth(request, username: str, password: str) -> User:
-#     user = authenticate(request, username=username, password=password)
-
-#     if not user or not hasattr(user, "profile"):
-#         raise PermissionDenied("Пользователю доступ запрещён")
-#     if not user.profile.uuid_is_active:
-#         user.profile.refresh_session()
-#     return user
-
 def create_refresh_token(user) -> str:
-    exp = (timezone.now() + timedelta(days=7)).timestamp()
+    """Создаёт запись RefreshToken и возвращает JWT с полями user_id и jti.
+
+    В БД хранится состояние токена (revoked, expires_at). В JWT кладём ссылочный jti,
+    по которому `RefreshTokenObtain` и `Logout` смогут найти запись и валидировать/аннулировать её.
+    """
+    # Сначала создаём и сохраняем запись refresh-токена в БД, чтобы jti был зафиксирован
     token = RefreshToken(user=user)
+    token.save()  # фиксируем jti и expires_at по умолчанию
+
+    exp = (timezone.now() + timedelta(days=7)).timestamp()
     payload = {
         "user_id": user.id,
+        "jti": str(token.jti),
         "exp": exp,
-        "uuid_token": str(token.jti),
     }
     return jwt.encode(payload=payload, key=settings.SECRET_KEY, algorithm="HS256")
 

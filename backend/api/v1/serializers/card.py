@@ -262,7 +262,7 @@ class CardCreateSerializer(serializers.ModelSerializer):
         print(patient, _)
         validated_data['patient_id'] = patient
         datetime_data = validated_data.pop('datetime_data', None)
-        common_data = validated_data.pop('datetime_data', None)
+        common_data = validated_data.pop('common_data', None)
         parameters_before_data = validated_data.pop('parameters_before_data', None)
         parameters_after_data = validated_data.pop('parameters_after_data', None)
         skin_data = validated_data.pop('skin_data', None)
@@ -346,8 +346,9 @@ class CardCreateSerializer(serializers.ModelSerializer):
         return card
 
 class CardUpdateSerializer(serializers.ModelSerializer):
-    doctor = UserSerializer(source='doctor_id.profile')
-    patient = PatientSerializer(source='patient_id')
+    doctor = UserSerializer(source='doctor_id.profile', read_only=True, allow_null=True)
+    # Делаем пациента редактируемым через вложенный объект
+    patient = PatientSerializer(source='patient_id', required=False)
     datetime_data = DateTimeDataSerializer(required = False)
     common_data = CommonDataSerializer(required = False)
     parameters_before_data = ParametersBeforeSerializer(required = False)
@@ -376,17 +377,18 @@ class CardUpdateSerializer(serializers.ModelSerializer):
         ]
     
     def update(self,instance,validated_data):
-
+        # Обновление данных пациента, если пришли
         patient_data = validated_data.pop('patient_id', None)
-        if patient_data:
-        # Получаем или создаем экземпляр Patient
-            patient, created = Patient.objects.update_or_create(
-            id=instance.patient_id.id if instance.patient_id else None,
-            defaults=patient_data
-        )
-            instance.patient_id = patient
-        else: 
-            pass
+        if isinstance(patient_data, dict):
+            if instance.patient_id:
+                # Обновляем существующего пациента
+                for attr, value in patient_data.items():
+                    setattr(instance.patient_id, attr, value)
+                instance.patient_id.save()
+            else:
+                # Создаём нового пациента и привязываем к карте
+                patient = Patient.objects.create(**patient_data)
+                instance.patient_id = patient
         for attr, value in validated_data.items():
             if attr not in [
             'datetime_data', 'common_data', 'parameters_before_data',
@@ -397,7 +399,6 @@ class CardUpdateSerializer(serializers.ModelSerializer):
                 setattr(instance,attr,value)
         instance.save()
         related_serializers = {
-            "patient": Patient,
             'datetime_data':DateTimeData, 
             'common_data': CommonData, 
             'parameters_before_data': ParametersBefore,

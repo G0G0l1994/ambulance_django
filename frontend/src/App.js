@@ -17,37 +17,54 @@ import PrivateRoute from "./components/private_route";
 import Register from "./routes/register";
 import DocumentTitle from "./components/DocumentTitle";
 import { CrewList } from "./routes/crew-list";
+import CrewEventsListener from "./components/CrewEventsListener";
 
 function App() {
-  return (
-    <ChakraProvider>
-      <Router>
-        <AuthProvider>
-          <DocumentTitle />
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <PrivateRoute>
-                  <MainLayout />
-                </PrivateRoute>
-              }
-            >
-              <Route path="/history/:user_id" element={<CardsHistory />} />
-              <Route path="/cards/create" element={<CardPage />} />
-              <Route path="/dispatcher-main" element={<DispatcherMain />} />
-              <Route path="/cards/:card_id" element={<CardDetail />} />
-              <Route path="/cards/:card_id/update" element={<CardUpdate />} />
-              <Route path="/crew/list/" element={<CrewList />} />
-            </Route>
+    return (
+        <ChakraProvider>
+            <Router>
+                <AuthProvider>
+                    <DocumentTitle />
+                    <CrewEventsListener />
+                    <Routes>
+                        <Route
+                            path="/"
+                            element={
+                                <PrivateRoute>
+                                    <MainLayout />
+                                </PrivateRoute>
+                            }
+                        >
+                            <Route
+                                path="/history/:user_id"
+                                element={<CardsHistory />}
+                            />
+                            <Route
+                                path="/cards/create"
+                                element={<CardPage />}
+                            />
+                            <Route
+                                path="/dispatcher-main"
+                                element={<DispatcherMain />}
+                            />
+                            <Route
+                                path="/cards/:card_id"
+                                element={<CardDetail />}
+                            />
+                            <Route
+                                path="/cards/:card_id/update"
+                                element={<CardUpdate />}
+                            />
+                            <Route path="/crew/list/" element={<CrewList />} />
+                        </Route>
 
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Routes>
-        </AuthProvider>
-      </Router>
-    </ChakraProvider>
-  );
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                    </Routes>
+                </AuthProvider>
+            </Router>
+        </ChakraProvider>
+    );
 }
 
 export default App;

@@ -41,17 +41,20 @@ INSTALLED_APPS = [
     "card",
     "rest_framework",
     "corsheaders",
+    "django_eventstream"
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # CORS должен идти как можно выше, перед CommonMiddleware
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware"
+    
 ]
 
 ROOT_URLCONF = "project.urls"
@@ -75,6 +78,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "project.wsgi.application"
+ASGI_APPLICATION = "project.asgi.application"
 
 
 # Database
@@ -174,4 +178,11 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://192.168.31.39:3000",
     "http://192.168.31.39:8000",
+]
+
+EVENTSTREAM_ALLOW_ORIGIN = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
 ]
