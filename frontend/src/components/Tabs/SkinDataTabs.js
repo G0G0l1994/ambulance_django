@@ -3,119 +3,127 @@ import { useEffect, useState, useCallback } from "react";
 
 import { SelectChoice } from "../fields/choice.field";
 import {
-  SKIN_COLOR_CHOICES,
-  SKIN_DRYNESS_CHOICES,
-  RASH_CHOICES,
-  SWELLING_CHOICES,
-  THROAT_CHOICES,
+    SKIN_COLOR_CHOICES,
+    SKIN_DRYNESS_CHOICES,
+    RASH_CHOICES,
+    SWELLING_CHOICES,
+    THROAT_CHOICES,
 } from "../../constants/select-text";
 import { debounce } from "lodash";
 
 const SkinTabs = ({ skin, onRefSave }) => {
-  const [localData, setLocalData] = useState(skin);
+    const [localData, setLocalData] = useState(skin || {});
 
-  const debounceUpdate = useCallback(
-    debounce((newData) => {
-      setLocalData(newData);
-    }, 500),
-    []
-  );
+    // Обновляем localData при изменении пропсов
+    useEffect(() => {
+        if (skin) {
+            setLocalData(skin);
+        }
+    }, [skin]);
 
-  const handleChange = (field, value) => {
-    setLocalData((prev) => {
-      const newData = { ...prev, [field]: value };
-      debounceUpdate(newData);
-      return newData;
-    });
-  };
-  useEffect(() => {
-    debounceUpdate.cancel();
-  }, []);
-  useEffect(() => {
-    if (onRefSave) {
-      onRefSave.current = () => localData;
-    }
-  }, [localData, onRefSave]);
+    const debounceUpdate = useCallback(
+        debounce((newData) => {
+            setLocalData(newData);
+        }, 500),
+        []
+    );
 
-  return (
-    <Grid gap={6} templateColumns="repeat(2, 1fr)">
-      <GridItem columnGap={6}>
-        <SelectChoice
-          fieldname="Кожные покровы"
-          options={SKIN_COLOR_CHOICES}
-          defaultValue={localData.color_skin}
-          onChange={(e) => {
-            handleChange("color_skin", e.target.value);
-          }}
-        />
-        <SelectChoice
-          fieldname="Влажность"
-          options={SKIN_DRYNESS_CHOICES}
-          defaultValue={localData.dry_skin}
-          onChange={(e) => {
-            handleChange("dry_skin", e.target.value);
-          }}
-        />
-        <SelectChoice
-          fieldname="Сыпь"
-          options={RASH_CHOICES}
-          defaultValue={localData.rash}
-          onChange={(e) => {
-            handleChange("rash", e.target.value);
-          }}
-        />
-        <SelectChoice
-          fieldname="Отеки"
-          options={SWELLING_CHOICES}
-          defaultValue={localData.swelling}
-          onChange={(e) => {
-            handleChange("swelling", e.target.value);
-          }}
-        />
-      </GridItem>
-      <GridItem columnGap={6}>
-        <SelectChoice
-          fieldname="Зев"
-          options={THROAT_CHOICES}
-          defaultValue={localData.throat}
-          onChange={(e) => {
-            handleChange("throat", e.target.value);
-          }}
-        />
-        <HStack p={2}>
-          <Text>Миндалины</Text>
-          <Input
-            w="260px"
-            ml="20px"
-            value={localData.tonsils}
-            onChange={(e) => {
-              handleChange("tonsils", e.target.value);
-            }}
-          />
-        </HStack>
-        <HStack p={2}>
-          <Text>Лимфатические узлы</Text>
-          <Input
-            w="250px"
-            value={localData.lymph_nodes}
-            onChange={(e) => {
-              handleChange("lymph_nodes", e.target.value);
-            }}
-          />
-        </HStack>
-        <HStack p={2}>
-          <Text>Желтушность</Text>
-          <Input
-            w="265px"
-            value={localData.jaundice}
-            onChange={(e) => {
-              handleChange("jaundice", e.target.value);
-            }}
-          />
-        </HStack>
-      </GridItem>
-    </Grid>
-  );
+    const handleChange = (field, value) => {
+        setLocalData((prev) => {
+            const newData = { ...prev, [field]: value };
+            debounceUpdate(newData);
+            return newData;
+        });
+    };
+    useEffect(() => {
+        debounceUpdate.cancel();
+    }, []);
+    useEffect(() => {
+        if (onRefSave) {
+            // Используем функцию, которая всегда возвращает актуальные данные
+            onRefSave.current = () => localData || {};
+        }
+    }, [localData, onRefSave]);
+
+    return (
+        <Grid gap={6} templateColumns="repeat(2, 1fr)">
+            <GridItem columnGap={6}>
+                <SelectChoice
+                    fieldname="Кожные покровы"
+                    options={SKIN_COLOR_CHOICES}
+                    defaultValue={localData.color_skin}
+                    onChange={(e) => {
+                        handleChange("color_skin", e.target.value);
+                    }}
+                />
+                <SelectChoice
+                    fieldname="Влажность"
+                    options={SKIN_DRYNESS_CHOICES}
+                    defaultValue={localData.dry_skin}
+                    onChange={(e) => {
+                        handleChange("dry_skin", e.target.value);
+                    }}
+                />
+                <SelectChoice
+                    fieldname="Сыпь"
+                    options={RASH_CHOICES}
+                    defaultValue={localData.rash}
+                    onChange={(e) => {
+                        handleChange("rash", e.target.value);
+                    }}
+                />
+                <SelectChoice
+                    fieldname="Отеки"
+                    options={SWELLING_CHOICES}
+                    defaultValue={localData.swelling}
+                    onChange={(e) => {
+                        handleChange("swelling", e.target.value);
+                    }}
+                />
+            </GridItem>
+            <GridItem columnGap={6}>
+                <SelectChoice
+                    fieldname="Зев"
+                    options={THROAT_CHOICES}
+                    defaultValue={localData.throat}
+                    onChange={(e) => {
+                        handleChange("throat", e.target.value);
+                    }}
+                />
+                <HStack p={2}>
+                    <Text>Миндалины</Text>
+                    <Input
+                        w="260px"
+                        ml="20px"
+                        value={localData.tonsils}
+                        onChange={(e) => {
+                            handleChange("tonsils", e.target.value);
+                        }}
+                    />
+                </HStack>
+                <HStack p={2}>
+                    <Text>Лимфатические узлы</Text>
+                    <Input
+                        w="250px"
+                        value={localData.lymph_nodes}
+                        onChange={(e) => {
+                            handleChange("lymph_nodes", e.target.value);
+                        }}
+                    />
+                </HStack>
+                <HStack p={2}>
+                    <Text>Желтушность</Text>
+                    <Input
+                        w="265px"
+                        value={localData.jaundice}
+                        onChange={(e) => {
+                            handleChange("jaundice", e.target.value);
+                        }}
+                    />
+                </HStack>
+            </GridItem>
+        </Grid>
+    );
 };
 
 export default SkinTabs;

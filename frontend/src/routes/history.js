@@ -1,21 +1,25 @@
 import { VStack, Heading, Text, Button, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { getCardsDoctorList, getProfile } from "../endpoints/api";
 
 const CardsHistory = () => {
   const [cards, setCards] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const userData = await getProfile();
         setUser(userData);
-        
+
         if (userData && userData.id) {
           const cardsData = await getCardsDoctorList(userData.id);
           setCards(Array.isArray(cardsData) ? cardsData : []);
+          console.log(cardsData[0].diagnosis_data);
         }
       } catch (error) {
         console.error("Ошибка загрузки данных:", error);
@@ -48,6 +52,9 @@ const CardsHistory = () => {
               p={4}
             >
               <Text>
+                <b>Дата:</b> {card?.datetime_data?.date_card}
+              </Text>
+              <Text>
                 <b>Пациент:</b> {card.patient?.full_name}{" "}
                 {card.patient?.date_of_birth &&
                   `(д.р. ${card.patient.date_of_birth})`}
@@ -66,17 +73,19 @@ const CardsHistory = () => {
                 <b>Статус:</b> {card.status}
               </Text>
               {card?.diagnosis_data && (
-                <VStack>
-                  <Text key={card.diagnosis_data.id + "_mkb"}>
-                    <b>МКБ-10:</b> {card.diagnosis_data["mkb"]}
+                <VStack align="start">
+                  <Text>
+                    <b>МКБ-10:</b> {card?.diagnosis_data?.mkb}
                   </Text>
-                  <Text key={card.diagnosis_data.id + "_diagnosis"}>
-                    <b>Диагноз:</b> {card.diagnosis_data["diagnosis"]}
+                  <Text>
+                    <b>Диагноз:</b> {card?.diagnosis_data.diagnosis}
                   </Text>
                 </VStack>
               )}
 
-              <Button>Редактировать</Button>
+              <Button onClick={() => navigate(`/cards/${card.id}/update`)}>
+                Редактировать
+              </Button>
             </VStack>
           ))
         )}

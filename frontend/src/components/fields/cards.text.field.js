@@ -1,20 +1,4 @@
-import {
-  Textarea,
-  Text,
-  VStack,
-  Input,
-  HStack,
-  FormControl,
-  FormLabel,
-  Box,
-} from "@chakra-ui/react";
-import {
-  Editable,
-  EditableInput,
-  EditableTextarea,
-  EditablePreview,
-} from "@chakra-ui/react";
-import { Field, Form, Formik } from "formik";
+import { Textarea, Text, Input, HStack } from "@chakra-ui/react";
 
 export const InputTextField = ({ fieldname, onChange, name }) => {
   return (
@@ -38,12 +22,7 @@ export const DateField = ({ fieldname, placeholder, name, onChange }) => {
   return (
     <HStack align="left" spacing={4} w="20%">
       <Text> {fieldname}</Text>
-      <Input
-        placeholder={placeholder}
-        name={name}
-        type="date"
-        onChange={onChange}
-      />
+      <Input placeholder={placeholder} name={name} onChange={onChange} />
     </HStack>
   );
 };

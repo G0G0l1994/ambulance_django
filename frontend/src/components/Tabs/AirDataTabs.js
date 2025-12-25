@@ -10,7 +10,14 @@ import {
 } from "../../constants/select-text";
 
 const AirDataTabs = ({ air, onRefSave }) => {
-  const [localData, setLocalData] = useState(air);
+  const [localData, setLocalData] = useState(air || {});
+
+  // Обновляем localData при изменении пропсов
+  useEffect(() => {
+    if (air) {
+      setLocalData(air);
+    }
+  }, [air]);
 
   const debounceUpdate = useCallback(
     debounce((newData) => {
@@ -31,7 +38,7 @@ const AirDataTabs = ({ air, onRefSave }) => {
   }, []);
   useEffect(() => {
     if (onRefSave) {
-      onRefSave.current = () => localData;
+      onRefSave.current = () => localData || {};
     }
   }, [localData, onRefSave]);
 

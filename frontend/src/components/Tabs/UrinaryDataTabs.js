@@ -8,8 +8,15 @@ import {
   CHARACTERISTIC_URINE_CHOICES,
 } from "../../constants/select-text";
 
-const UrinaryDataTabs = (urinary, onRefSave) => {
-  const [localData, setLocalData] = useState(urinary);
+const UrinaryDataTabs = ({ urinary, onRefSave }) => {
+  const [localData, setLocalData] = useState(urinary || {});
+
+  // Обновляем localData при изменении пропсов
+  useEffect(() => {
+    if (urinary) {
+      setLocalData(urinary);
+    }
+  }, [urinary]);
 
   const handleChange = (field, value) => {
     setLocalData((prev) => ({
@@ -20,7 +27,7 @@ const UrinaryDataTabs = (urinary, onRefSave) => {
 
   useEffect(() => {
     if (onRefSave) {
-      onRefSave.current = () => localData;
+      onRefSave.current = () => localData || {};
     }
   }, [localData, onRefSave]);
 

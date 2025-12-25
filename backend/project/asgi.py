@@ -12,4 +12,6 @@ from django.core.asgi import get_asgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "project.settings")
 
+# Django ASGI приложение
+# django-eventstream работает через стандартное Django ASGI приложение
 application = get_asgi_application()

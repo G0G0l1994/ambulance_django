@@ -76,7 +76,7 @@ class CommonDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommonData
         fields = [
-            "id","complaints","anamnesis","general_assessment","сonsciousness",
+            "id","complaints","anamnesis","general_assessment","consciousness",
             "glasgow_scale","body_position","normal_blood_pressure_systolic",
             "normal_blood_pressure_diastolic","status_localis","general_assessment_label",
         ]
@@ -174,12 +174,14 @@ class DiagnosisDataSerializer(serializers.ModelSerializer):
 class CardListSerializer(serializers.ModelSerializer):
     doctor = UserSerializer(source="doctor_id.profile", read_only=True)
     patient = PatientSerializer(source='patient_id',read_only=True)
+    diagnosis_data = DiagnosisDataSerializer(read_only=True)
+    datetime_data = DateTimeDataSerializer(read_only=True)
 
     class Meta:
         model = Card
         fields = [
             'id', 'doctor_id', 'doctor', 'patient_id', 'patient', "address",
-            'crew', 'cause', 'status', 'diagnosis_data'
+            'crew', 'cause', 'status', 'diagnosis_data','datetime_data'
         ]
     
 
@@ -222,7 +224,7 @@ class CardCreateSerializer(serializers.ModelSerializer):
     address = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
     patient_data = PatientSerializer(read_only=True)
-    datetime_data = DateTimeDataSerializer(read_only=True)
+    datetime_data = DateTimeDataSerializer(required=False)
     common_data = CommonDataSerializer(read_only=True)
     parameters_before_data = ParametersBeforeSerializer(read_only=True)
     parameters_after_data = ParametersAfterSerializer(read_only=True)
@@ -259,7 +261,6 @@ class CardCreateSerializer(serializers.ModelSerializer):
             'date_of_birth': validated_data.pop('date_of_birth'),
         }
         patient, _ = Patient.objects.get_or_create(**patient_data)
-        print(patient, _)
         validated_data['patient_id'] = patient
         datetime_data = validated_data.pop('datetime_data', None)
         common_data = validated_data.pop('common_data', None)
@@ -346,7 +347,7 @@ class CardCreateSerializer(serializers.ModelSerializer):
         return card
 
 class CardUpdateSerializer(serializers.ModelSerializer):
-    doctor = UserSerializer(source='doctor_id.profile', read_only=True, allow_null=True)
+    doctor = UserSerializer(source='doctor_id.profile', read_only=False, allow_null=True)
     # Делаем пациента редактируемым через вложенный объект
     patient = PatientSerializer(source='patient_id', required=False)
     datetime_data = DateTimeDataSerializer(required = False)
@@ -378,7 +379,9 @@ class CardUpdateSerializer(serializers.ModelSerializer):
     
     def update(self,instance,validated_data):
         # Обновление данных пациента, если пришли
-        patient_data = validated_data.pop('patient_id', None)
+        # Поле в сериализаторе называется 'patient', но source='patient_id'
+        # DRF может положить данные в validated_data как 'patient' или 'patient_id'
+        patient_data = validated_data.pop('patient', None) or validated_data.pop('patient_id', None)
         if isinstance(patient_data, dict):
             if instance.patient_id:
                 # Обновляем существующего пациента
@@ -416,7 +419,13 @@ class CardUpdateSerializer(serializers.ModelSerializer):
 
         for field,model in related_serializers.items():
             if field in validated_data:
-                model.objects.update_or_create(card=instance,defaults=validated_data[field])
+                # Проверяем, что данные не пустые (есть хотя бы одно поле кроме id)
+                data = validated_data[field]
+                if data and isinstance(data, dict):
+                    # Фильтруем пустые значения и оставляем только значимые поля
+                    filtered_data = {k: v for k, v in data.items() if v is not None or k == 'id'}
+                    if len(filtered_data) > 0:
+                        model.objects.update_or_create(card=instance, defaults=filtered_data)
         
 
         return instance

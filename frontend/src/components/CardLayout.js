@@ -56,42 +56,104 @@ const CardLayout = ({ card_id }) => {
     console.log(profile);
     const handleSave = async () => {
         try {
-            const patientData = patientRef.current?.();
+            // Получаем данные из всех табов
+            console.log("Извлечение данных из ref...");
+            const patientDataRaw = patientRef.current?.();
+            console.log("patientDataRaw:", patientDataRaw);
+            // Извлекаем адрес из данных пациента (если он там есть)
+            const { _address, ...patientData } = patientDataRaw || {};
+
             const timeData = timeRef.current?.();
+            console.log("timeData:", timeData);
             const commonData = commonRef.current?.();
+            console.log("commonData:", commonData);
             const paramsBefore = paramsBeforeRef.current?.();
+            console.log("paramsBefore:", paramsBefore);
             const skinData = skinRef.current?.();
+            console.log("skinData:", skinData);
             const airData = airRef.current?.();
+            console.log("airData:", airData);
             const heartData = heartRef.current?.();
+            console.log("heartData:", heartData);
             const stomachData = stomachRef.current?.();
+            console.log("stomachData:", stomachData);
             const nervousData = nervousRef.current?.();
+            console.log("nervousData:", nervousData);
             const urinaryData = urinaryRef.current?.();
+            console.log("urinaryData:", urinaryData);
             const ecgData = ecgRef.current?.();
+            console.log("ecgData:", ecgData);
             const aidData = aidRef.current?.();
+            console.log("aidData:", aidData);
             const paramsAfter = paramsAfterRef.current?.();
+            console.log("paramsAfter:", paramsAfter);
             const diagnosisData = diagnosisRef.current?.();
+            console.log("diagnosisData:", diagnosisData);
+
+            // Функция для проверки, что объект не пустой и содержит данные
+            const hasData = (obj) => {
+                if (!obj || typeof obj !== "object") return false;
+                // Проверяем, что есть хотя бы одно поле (включая id, так как id может быть важен)
+                const keys = Object.keys(obj);
+                return keys.length > 0;
+            };
 
             const updateData = {
-                ...card,
-                doctor_id: profile.id,
-                patient: patientData,
-                datetime_data: timeData,
-                common_data: commonData,
-                parameters_before_data: paramsBefore,
-                skin_data: skinData,
-                air_data: airData,
-                heart_data: heartData,
-                stomach_data: stomachData,
-                nervous_data: nervousData,
-                urinary_data: urinaryData,
-                ecg_data: ecgData,
-                aid_data: aidData,
-                parameters_after_data: paramsAfter,
-                diagnosis_data: diagnosisData,
+                // Не копируем весь card, чтобы не отправлять лишние данные
+                doctor_id: profile.id || card.doctor_id,
+                address: _address !== undefined ? _address : card.address, // Используем адрес из PatientTab или текущий
+                crew: card.crew,
+                cause: card.cause,
+                status: card.status,
             };
-            console.log(updateData);
+
+            // Добавляем данные только если они не пустые
+            if (hasData(patientData)) {
+                updateData.patient = patientData;
+            }
+            if (hasData(timeData)) {
+                updateData.datetime_data = timeData;
+            }
+            if (hasData(commonData)) {
+                updateData.common_data = commonData;
+            }
+            if (hasData(paramsBefore)) {
+                updateData.parameters_before_data = paramsBefore;
+            }
+            if (hasData(skinData)) {
+                updateData.skin_data = skinData;
+            }
+            if (hasData(airData)) {
+                updateData.air_data = airData;
+            }
+            if (hasData(heartData)) {
+                updateData.heart_data = heartData;
+            }
+            if (hasData(stomachData)) {
+                updateData.stomach_data = stomachData;
+            }
+            if (hasData(nervousData)) {
+                updateData.nervous_data = nervousData;
+            }
+            if (hasData(urinaryData)) {
+                updateData.urinary_data = urinaryData;
+            }
+            if (hasData(ecgData)) {
+                updateData.ecg_data = ecgData;
+            }
+            if (hasData(aidData)) {
+                updateData.aid_data = aidData;
+            }
+            if (hasData(paramsAfter)) {
+                updateData.parameters_after_data = paramsAfter;
+            }
+            if (hasData(diagnosisData)) {
+                updateData.diagnosis_data = diagnosisData;
+            }
+
+            console.log("Отправляемые данные:", updateData);
             await patchCard(card_id, updateData);
-            alert("card save");
+            alert("Карта сохранена");
         } catch (error) {
             console.error("Ошибка сохранения:", error.response?.data);
             alert(

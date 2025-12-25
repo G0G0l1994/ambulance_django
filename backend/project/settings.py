@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-n#l1ivnpwbdhv#qo!0b4@im1qa-5ou1as#%ly*d213tpqc^a0*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.31.39', '192.168.1.17']
 
 
 # Application definition
@@ -186,3 +186,29 @@ EVENTSTREAM_ALLOW_ORIGIN = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
 ]
+
+def get_eventstream_channels(request):
+    """
+    Возвращает список разрешённых каналов для SSE.
+    Обрабатывает запросы вида: /events/?channel=crew-1 или /events/?channels=crew-1
+    """
+    channels = []
+    # Получаем каналы из параметров channel или channels
+    channel_param = request.GET.get('channel') or request.GET.get('channels')
+    if channel_param:
+        # Если передан один канал (строка), добавляем его
+        if isinstance(channel_param, str):
+            # Если несколько каналов через запятую, разбиваем
+            channel_list = [ch.strip() for ch in channel_param.split(',')]
+            channels.extend(channel_list)
+        # Если передано несколько каналов (список)
+        elif isinstance(channel_param, list):
+            channels.extend(channel_param)
+    
+    # Разрешаем все каналы вида crew-* для упрощения (в продакшене лучше добавить проверку)
+    # Фильтруем только crew-* каналы для безопасности
+    filtered_channels = [ch for ch in channels if ch and ch.startswith('crew-')]
+    
+    return filtered_channels
+
+EVENTSTREAM_CHANNELS = get_eventstream_channels

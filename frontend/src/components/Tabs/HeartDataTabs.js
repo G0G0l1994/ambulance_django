@@ -17,7 +17,14 @@ import {
 } from "../../constants/select-text";
 
 const HeartDataTabs = ({ heart, onRefSave }) => {
-  const [localData, setLocalData] = useState(heart);
+  const [localData, setLocalData] = useState(heart || {});
+
+  // Обновляем localData при изменении пропсов
+  useEffect(() => {
+    if (heart) {
+      setLocalData(heart);
+    }
+  }, [heart]);
 
   const handleChange = (field, value) => {
     setLocalData((prev) => ({ ...prev, [field]: value }));
@@ -25,7 +32,7 @@ const HeartDataTabs = ({ heart, onRefSave }) => {
 
   useEffect(() => {
     if (onRefSave) {
-      onRefSave.current = () => localData;
+      onRefSave.current = () => localData || {};
     }
   }, [localData, onRefSave]);
 

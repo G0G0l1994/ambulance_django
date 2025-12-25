@@ -23,7 +23,7 @@ class Profile(models.Model):
         default=uuid.uuid4, editable=False, unique=True, verbose_name="Идентификатор сессии"
     )
     session_expire = models.DateTimeField(
-        default= get_expire_time(), verbose_name="Срок действия сессии"
+        default= get_expire_time, verbose_name="Срок действия сессии"
     )
     is_online = models.BooleanField(default=False)
 
@@ -41,8 +41,10 @@ class Profile(models.Model):
 
     def invalidate_all_session(self):
         self.refresh_session(expire_days=0)
+
     def __str__(self):
-                return f"{self.user.username} ({self.get_role_display()})"
+        return f"{self.user.username} ({self.get_role_display()})"
+    
     class Meta:
         db_table = "profiles"
 
@@ -71,6 +73,7 @@ class RefreshToken(models.Model):
 
     def __str__(self):
                 return f"{self.user.username} | {self.jti} | {'revoked' if self.revoked else 'active'}"
+    
     class Meta:
         db_table = 'refresh'
 
@@ -78,7 +81,7 @@ class RefreshToken(models.Model):
 
 
 class Crew(models.Model):
-    crew_number = models.CharField(null=True)
+    crew_number = models.CharField(null=True, max_length = 10)
     main = models.OneToOneField(User, on_delete=models.CASCADE, null=True, related_name='main')
     secondary = models.OneToOneField(User, on_delete=models.CASCADE, null=True, related_name='secondary')
 

@@ -5,7 +5,15 @@ import { Grid, GridItem, Textarea, Text, Select } from "@chakra-ui/react";
 import { debounce } from "lodash";
 
 const ECGDataTabs = ({ ecg, onRefSave }) => {
-  const [localData, setLocalData] = useState(ecg);
+  const [localData, setLocalData] = useState(ecg || {});
+
+  // Обновляем localData при изменении пропсов
+  useEffect(() => {
+    if (ecg) {
+      setLocalData(ecg);
+    }
+  }, [ecg]);
+
   const debouncedUpdate = useCallback(
     debounce((newData) => {
       setLocalData(newData);
@@ -16,7 +24,6 @@ const ECGDataTabs = ({ ecg, onRefSave }) => {
     setLocalData((prev) => {
       const newData = { ...prev, [field]: value };
       debouncedUpdate(newData);
-      console.log(newData)
       return newData;
     });
   };
@@ -26,7 +33,7 @@ const ECGDataTabs = ({ ecg, onRefSave }) => {
   }, []);
   useEffect(() => {
     if (onRefSave) {
-      onRefSave.current = () => localData;
+      onRefSave.current = () => localData || {};
     }
   }, [localData, onRefSave]);
 

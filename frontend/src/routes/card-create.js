@@ -17,12 +17,27 @@ const CardPage = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  const dateTransform = (date) => {
+    const data = Array.from(date);
+    const days = data.slice(0, 2);
+    const month = data.slice(3, 5);
+    const year = data.slice(6);
+    return `${year.join("")}-${month.join("")}-${days.join("")}`;
+  };
+
+  const handleDateChange = (e) => {
+    const date = dateTransform(e.target.value);
+    console.log(e.target.name);
+    console.log(date);
+    setFormData({ ...formData, [e.target.name]: date });
+  };
 
   const handleSubmit = async () => {
+    console.log(formData);
     try {
       const result = await cardCreate(formData);
+
       alert("Карта успешно создана");
-      console.log(formData);
       navigator("/dispatcher-main");
     } catch (error) {
       alert("Ошибка при создании карты");
@@ -51,7 +66,7 @@ const CardPage = () => {
               fieldname={field.label}
               placeholder={field.placeholder}
               name={field.name}
-              onChange={handleChange}
+              onChange={handleDateChange}
             />
           );
         }
@@ -67,14 +82,6 @@ const CardPage = () => {
           );
         }
       })}
-
-      {/* <SelectChoice
-                options={CrewData}
-                name="crew"
-                fieldname="Номер Бригады"
-                onChange={handleChange}
-                placeholder="Выбор бригады"
-            /> */}
       <Button colorScheme="blue" onClick={handleSubmit}>
         Создать карту
       </Button>

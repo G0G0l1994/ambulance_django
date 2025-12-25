@@ -1,4 +1,5 @@
 from functools import partial
+from datetime import datetime
 from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.parsers import JSONParser,FormParser
@@ -129,7 +130,7 @@ class MKBListAPIView(APIView):
 
         mkb_list = MKB.objects.all()
         serializer = MKBSerializer(mkb_list, many=True)
-        return Response(serializer.data, status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class DispatchCardToCrewAPIView(APIView):
@@ -151,22 +152,33 @@ class DispatchCardToCrewAPIView(APIView):
                 {"detail": "Card not found"}, 
                 status=status.HTTP_400_BAD_REQUEST
                 )
-        card.crew = int(crew_number)
+        # Преобразуем crew_number в int для сохранения в Card.crew (IntegerField)
+        try:
+            crew_number_int = int(crew_number)
+        except (ValueError, TypeError):
+            return Response(
+                {"detail": "Invalid crew_number format"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        card.crew = crew_number_int
         card.status = 'handed_crew'
         card.save(update_fields=['crew', "status"])
 
+        # Формируем канал для SSE (используем строковое значение crew_number)
         channel = f"crew-{crew_number}"
         payload = {
             "type": "card_assigned",
-            "card_id" : card.id,
+            "card_id": card.id,
             "crew_number": crew_number,
+            "doctor_id": card.doctor_id.id if card.doctor_id else None,
             "status": card.status,
             "address": card.address,
             "cause": card.cause,
+            "transmission_time": datetime.now(),
             "detail_card": f"/cards/{card.id}/update",
             "update_api_url": f"/api/cards/{card.id}/update/",
             "accept_next_status": "in_progress"
-
         }
         send_event(channel, "new_call", payload)
         return Response(

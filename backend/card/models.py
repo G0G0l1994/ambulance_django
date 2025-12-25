@@ -17,6 +17,7 @@ class Patient(models.Model):
     def get_full_name(self):
         return f"{self.last_name} {self.first_name} {self.surname}".strip()
 
+    @property
     def get_full_age(self):
 
         if not self.date_of_birth:
@@ -53,7 +54,7 @@ class Card(models.Model):
 class DateTimeData(models.Model):
     card = models.OneToOneField(Card,on_delete=models.CASCADE, related_name='datetime_data')
     date_card = models.DateField(auto_now=True)  # дата карты
-    time_of_receipt = models.DateTimeField(null=True)  # время приёма
+    time_of_receipt = models.DateTimeField(null=True, auto_now_add=True)  # время приёма
     transmission_time = models.DateTimeField(null=True)  # время передачи
     departure_time = models.DateTimeField(null=True)  # время выезда бригады
     arrival_time = models.DateTimeField(null=True)  # время прибытия
@@ -70,7 +71,7 @@ class CommonData(models.Model):
     complaints = models.TextField(null=True)
     anamnesis = models.TextField(null=True)
     general_assessment = models.CharField(max_length=100, null=True, choices=GENERAL_ASSESSMENT_CHOICES,default="satisfactory")
-    сonsciousness = models.CharField(max_length=100, null=True, choices=CONSCIOUSNESS_CHOICES,default="clear")  # сознание
+    consciousness = models.CharField(max_length=100, null=True, choices=CONSCIOUSNESS_CHOICES,default="clear")  # сознание
     glasgow_scale = models.IntegerField(null=True, default=15)  # шкала Глазго
     body_position = models.CharField(max_length=100, null=True, choices=BODY_POSITION_CHOICES, default='active')  # исправлено
     normal_blood_pressure_systolic = models.IntegerField(null=True,default=DEFAULT_VALUES['normal_blood_pressure_systolic'])

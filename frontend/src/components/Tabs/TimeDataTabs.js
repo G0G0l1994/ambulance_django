@@ -21,7 +21,7 @@ const TimeDataTab = ({ time, onRefSave }) => {
 
   useEffect(() => {
     if (onRefSave) {
-      onRefSave.current = () => localData;
+      onRefSave.current = () => localData || {};
     }
   }, [localData, onRefSave]);
   return (
@@ -30,27 +30,27 @@ const TimeDataTab = ({ time, onRefSave }) => {
         <HStack>
           <Text>Время приёма:</Text>
           <Input
-            value={new Date(localData.time_of_receipt || "").toLocaleTimeString(
-              "ru-ru"
-            )}
+            value={new Date(
+              localData?.time_of_receipt || ""
+            ).toLocaleTimeString("ru-ru")}
             onChange={(e) => handleChange("time_of_receipt", e.target.value)}
           />
         </HStack>
         <HStack>
           <Text>Время передачи:</Text>
           <Input
-            value={new Date(
-              localData.transmission_time || " "
-            ).toLocaleTimeString("ru-ru")}
+            value={new Date(localData?.transmission_time).toLocaleTimeString(
+              "ru-ru"
+            )}
             onChange={(e) => handleChange("transmission_time", e.target.value)}
           />
         </HStack>
         <HStack>
           <Text>Время принятия бригадой:</Text>
           <Input
-            value={new Date(localData.departure_time || " ").toLocaleTimeString(
-              "ru-ru"
-            )}
+            value={new Date(
+              localData?.departure_time || " "
+            ).toLocaleTimeString("ru-ru")}
             onChange={(e) => handleChange("departure_time", e.target.value)}
           />
         </HStack>
@@ -107,8 +107,6 @@ const TimeDataTab = ({ time, onRefSave }) => {
                   "start_time_of_hospitalization",
                   new Date(Date.now()).toISOString()
                 );
-                console.log(localData);
-                console.log("click");
               }}
             >
               {" "}

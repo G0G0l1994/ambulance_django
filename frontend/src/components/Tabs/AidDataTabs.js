@@ -5,7 +5,14 @@ import { AID_EFFECTS } from "../../constants/select-text";
 import { debounce } from "lodash";
 
 const AidDataTabs = ({ aid_data, onRefSave }) => {
-  const [localData, setLocalData] = useState(aid_data);
+  const [localData, setLocalData] = useState(aid_data || {});
+
+  // Обновляем localData при изменении пропсов
+  useEffect(() => {
+    if (aid_data) {
+      setLocalData(aid_data);
+    }
+  }, [aid_data]);
 
   const handleChange = (field, value) => {
     setLocalData((prev) => ({
@@ -16,7 +23,7 @@ const AidDataTabs = ({ aid_data, onRefSave }) => {
 
   useEffect(() => {
     if (onRefSave) {
-      onRefSave.current = () => localData;
+      onRefSave.current = () => localData || {};
     }
   }, [localData, onRefSave]);
 
