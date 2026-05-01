@@ -47,9 +47,6 @@ class DateTimeDataSerializer(serializers.ModelSerializer):
 
 class ParametersBeforeSerializer(serializers.ModelSerializer):
     
-    
-
-
     class Meta:
         model = ParametersBefore
         fields  = [

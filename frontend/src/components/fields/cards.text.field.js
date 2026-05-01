@@ -3,7 +3,7 @@ import { Textarea, Text, Input, HStack } from "@chakra-ui/react";
 export const InputTextField = ({ fieldname, onChange, name }) => {
   return (
     <HStack align="center" spacing={4} w="30%">
-      <Text> {fieldname}</Text>
+      <Text w="150px"> {fieldname}</Text>
       <Textarea onChange={onChange} name={name}></Textarea>
     </HStack>
   );
@@ -12,7 +12,7 @@ export const InputTextField = ({ fieldname, onChange, name }) => {
 export const InputField = ({ fieldname, placeholder, onChange, name }) => {
   return (
     <HStack align="center" spacing={4} w="30%">
-      <Text> {fieldname}</Text>
+      <Text w="150px"> {fieldname}</Text>
       <Input placeholder={placeholder} onChange={onChange} name={name} />
     </HStack>
   );
@@ -20,8 +20,8 @@ export const InputField = ({ fieldname, placeholder, onChange, name }) => {
 
 export const DateField = ({ fieldname, placeholder, name, onChange }) => {
   return (
-    <HStack align="left" spacing={4} w="20%">
-      <Text> {fieldname}</Text>
+    <HStack align="left" spacing={4} w="30%">
+      <Text w="150px"> {fieldname}</Text>
       <Input placeholder={placeholder} name={name} onChange={onChange} />
     </HStack>
   );

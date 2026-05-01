@@ -140,7 +140,11 @@ JWT_EXPIRATION_HOURS = 24
 REST_FRAMEWORK = {'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated'], 'DEFAULT_AUTHENTICATION_CLASSES': [
         'user.services.auth.CustomJWTAuth',
         'rest_framework.authentication.SessionAuthentication',  # для админки и Browsable API
-    ],}
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100
+}
+
 
 # CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOWED_ORIGINS = [

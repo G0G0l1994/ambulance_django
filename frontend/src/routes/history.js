@@ -19,9 +19,9 @@ const CardsHistory = () => {
         if (userData && userData.id) {
           const cardsData = await getCardsDoctorList(userData.id);
           setCards(Array.isArray(cardsData) ? cardsData : []);
-          console.log(cardsData[0].diagnosis_data);
         }
       } catch (error) {
+
         console.error("Ошибка загрузки данных:", error);
         setCards([]);
       } finally {

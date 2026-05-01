@@ -6,6 +6,7 @@ from rest_framework.parsers import JSONParser,FormParser
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
 
 from django_eventstream import send_event
 
@@ -13,6 +14,11 @@ from django_eventstream import send_event
 from api.v1.serializers.card import CardDetailSerializer, CardCreateSerializer,CardUpdateSerializer, CardListSerializer, MKBSerializer
 from card.models import Card,MKB
 
+
+class CardPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = 'page_size'
+    max_page_size = 10000
 
 class CardDetailAPIView(APIView):
     serializer_class = CardDetailSerializer
@@ -83,7 +89,7 @@ class CardListAPIView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self,request, user_id = None):
-
+        paginator = CardPagination()
         if user_id:
             cards = Card.objects.filter(doctor_id=user_id).select_related(
             'patient_id',
@@ -102,8 +108,9 @@ class CardListAPIView(APIView):
             'aid_data',
             'diagnosis_data',
             ).prefetch_related().order_by('-id')
-            serializer = CardListSerializer(cards,many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            pagator_result = paginator.paginate_queryset(cards,request, view=self)
+            serializer = CardListSerializer(pagator_result,many=True)
+            return paginator.get_paginated_response(serializer.data)
         cards = Card.objects.select_related(
             'patient_id',
             'datetime_data',
@@ -120,8 +127,10 @@ class CardListAPIView(APIView):
             'aid_data',
             'diagnosis_data',
             ).prefetch_related().all().order_by('-id')
-        serializer = CardListSerializer(cards,many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        pagator_result = paginator.paginate_queryset(cards,request, view=self)
+        serializer = CardListSerializer(pagator_result,many=True)
+        return paginator.get_paginated_response(serializer.data)
+        
 
 class MKBListAPIView(APIView):
     permission_classes = [IsAuthenticated]
