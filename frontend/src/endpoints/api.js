@@ -16,6 +16,7 @@ const DOCTORS_LIST = `${BASE_URL}/users/`;
 // Получение бригады текущего пользователя без изменений бэкенда
 // Делается на клиенте через профиль + список бригад
 
+const api = axios.create({ withCredentials: true });
 export const login = async (username, password) => {
   const response = await axios.post(
     LOGIN_URL,
@@ -30,7 +31,8 @@ export const refreshToken = async () => {
     await axios.post(REFRESH_TOKEN, {}, { withCredentials: true });
     return true;
   } catch (error) {
-    // console.error("Refresh token failed:", error);
+    console.log("Refresh token failed:", error);
+    window.location.href = LOGIN_URL;
     return false;
   }
 };
@@ -49,14 +51,13 @@ export const getDoctorsList = async () => {
   }
 };
 
-export const getCardsList = async () => {
+export const getCardsList = async (url) => {
   try {
-    const response = await axios.get(CARDS_URL, { withCredentials: true });
+    const targetUrl = url || CARDS_URL;
+    const response = await api.get(targetUrl, { withCredentials: true });
     return response.data;
   } catch (error) {
-    return callRefresh(error, () => {
-      return axios.get(CARDS_URL, { withCredentials: true });
-    });
+    return callRefresh(error, getCardsList, url);
   }
 };
 
@@ -146,17 +147,19 @@ export const updateCrew = async (crew_id, update_data) => {
   }
 };
 
-const callRefresh = async (error, retryFunc) => {
+const callRefresh = async (error, retryFunc, ...args) => {
+
+  const isRefreshRequest = error.config.url.includes(REFRESH_TOKEN)
   if (
     error.response &&
-    (error.response.status === 401 || error.response.status === 403)
+    (error.response.status === 401 || error.response.status === 403) && !isRefreshRequest
   ) {
     const tokenRefreshed = await refreshToken();
 
     if (tokenRefreshed) {
       try {
-        const retryResponse = await retryFunc();
-        return retryResponse.data;
+        return await retryFunc(...args);
+        // return retryResponse.data;
       } catch (retryError) {
         console.error("Retry failed after refresh:", retryError);
         throw retryError;
@@ -223,9 +226,10 @@ export const getProfile = async () => {
     const profile = await axios.get(PROFILE_URL, { withCredentials: true });
     return profile.data;
   } catch (error) {
-    return callRefresh(error, () => {
-      axios.get(PROFILE_URL, { withCredentials: true });
-    });
+    // return callRefresh(error, () => {
+    //   axios.get(PROFILE_URL, { withCredentials: true });
+    // });
+    console.log(error);
   }
 };
 

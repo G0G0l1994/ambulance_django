@@ -193,7 +193,10 @@ class RefreshTokenObtain(APIView):
     def post(self,request):
         token = request.COOKIES.get('refresh_token')
         if not token:
-            return Response({'detail': 'Refresh token required'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # return Response({'detail': 'Refresh token required'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            return
         try:
             payload = jwt.decode(token, key=settings.SECRET_KEY, algorithms=['HS256'])
             user_id = payload.get('user_id')

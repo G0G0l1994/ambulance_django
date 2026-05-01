@@ -7,10 +7,16 @@ import { CardTable } from "../components/card.table";
 
 const DispatcherMain = () => {
   const [cards, setCards] = useState([]);
+  const [pagination, setPagination] = useState({ next: null, prev: null });
 
-  const fetchCards = async () => {
-    const cardsData = await getCardsList();
-    setCards(Array.isArray(cardsData) ? cardsData : []); // Если cardsData не массив, используем пустой массив
+  const fetchCards = async (url = null) => {
+    const cardsData = await getCardsList(url);
+    setCards(Array.isArray(cardsData?.results) ? cardsData?.results : []);
+
+    setPagination({
+      next: cardsData?.next || null,
+      prev: cardsData?.previous || null,
+    });
   };
 
   useEffect(() => {
@@ -19,6 +25,21 @@ const DispatcherMain = () => {
 
   const handleCardUpdate = () => {
     fetchCards();
+  };
+  const handleNextPage = async () => {
+    if (pagination.next) {
+      const relativeUrl =
+        new URL(pagination.next).pathname + new URL(pagination.next).search;
+      fetchCards(relativeUrl);
+    }
+  };
+
+  const handlePrevPage = async () => {
+    if (pagination.prev) {
+      const relativeUrlPrev =
+        new URL(pagination.prev).pathname + new URL(pagination.prev).search;
+      fetchCards(relativeUrlPrev);
+    }
   };
 
   return (
@@ -31,6 +52,10 @@ const DispatcherMain = () => {
           onCardUpdate={handleCardUpdate}
         />
       </VStack>
+      <HStack spacing={4}>
+        <button onClick={handlePrevPage}>prev</button>
+        <button onClick={handleNextPage}>next</button>
+      </HStack>
     </VStack>
   );
 };
