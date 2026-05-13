@@ -1,10 +1,16 @@
 from django.urls import path
+from django.http import HttpResponse
+from rest_framework import status
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from api.v1.views.user import *
 from api.v1.views.card import *
 
+def health_check(request):
+    return HttpResponse({"health_check": "OK"}, status=status.HTTP_200_OK)
+
 urlpatterns = [
+    path('health/',health_check),
     path("users/", UserAPIView.as_view()),
     path('users/profile/',ProfileAPIView.as_view()),
     path("cards/", CardListAPIView.as_view()),

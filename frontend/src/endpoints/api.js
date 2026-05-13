@@ -16,7 +16,7 @@ const DOCTORS_LIST = `${BASE_URL}/users/`;
 // Получение бригады текущего пользователя без изменений бэкенда
 // Делается на клиенте через профиль + список бригад
 
-const api = axios.create({ withCredentials: true });
+// const api = axios.create({ withCredentials: true });
 export const login = async (username, password) => {
   const response = await axios.post(
     LOGIN_URL,
@@ -54,7 +54,7 @@ export const getDoctorsList = async () => {
 export const getCardsList = async (url) => {
   try {
     const targetUrl = url || CARDS_URL;
-    const response = await api.get(targetUrl, { withCredentials: true });
+    const response = await axios.get(targetUrl, { withCredentials: true });
     return response.data;
   } catch (error) {
     return callRefresh(error, getCardsList, url);
@@ -148,11 +148,11 @@ export const updateCrew = async (crew_id, update_data) => {
 };
 
 const callRefresh = async (error, retryFunc, ...args) => {
-
-  const isRefreshRequest = error.config.url.includes(REFRESH_TOKEN)
+  const isRefreshRequest = error.config.url.includes(REFRESH_TOKEN);
   if (
     error.response &&
-    (error.response.status === 401 || error.response.status === 403) && !isRefreshRequest
+    (error.response.status === 401 || error.response.status === 403) &&
+    !isRefreshRequest
   ) {
     const tokenRefreshed = await refreshToken();
 
@@ -211,9 +211,7 @@ export const register = async (
       passwordConfirm: passwordConfirm,
     };
 
-    const response = await axios.post(REGISTER_URL, requestData, {
-      withCredentials: true,
-    });
+    const response = await axios.post(REGISTER_URL, requestData);
 
     return response.data;
   } catch (error) {

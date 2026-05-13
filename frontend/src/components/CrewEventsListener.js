@@ -3,7 +3,7 @@ import { useToast } from "@chakra-ui/react";
 import { useAuth } from "../contexts/useAuth";
 
 // Формируем адрес бэкенда для SSE динамически: тот же hostname, порт 8000
-const EVENTS_URL = `${window.location.protocol}//${window.location.hostname}:8000/events/`;
+const EVENTS_URL = `$/events/`;
 
 const CrewEventsListener = () => {
   const { myCrew } = useAuth();
@@ -15,7 +15,7 @@ const CrewEventsListener = () => {
     const channel = `crew-${myCrew.crew_number}`;
     // Добавляем и channel, и channels для совместимости с разными версиями django-eventstream
     const q = `channel=${encodeURIComponent(
-      channel
+      channel,
     )}&channels=${encodeURIComponent(channel)}`;
     const url = `${EVENTS_URL}?${q}`;
 
@@ -39,7 +39,7 @@ const CrewEventsListener = () => {
             isClosable: true,
           });
           window.dispatchEvent(
-            new CustomEvent("incoming-call", { detail: payload })
+            new CustomEvent("incoming-call", { detail: payload }),
           );
         }
       } catch {}
@@ -51,7 +51,7 @@ const CrewEventsListener = () => {
         const payload = JSON.parse(e.data);
         if (payload?.type === "card_assigned") {
           window.dispatchEvent(
-            new CustomEvent("incoming-call", { detail: payload })
+            new CustomEvent("incoming-call", { detail: payload }),
           );
         }
       } catch {}

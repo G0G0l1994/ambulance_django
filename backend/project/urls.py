@@ -18,8 +18,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+
+
 urlpatterns = [
     path("admin/", admin.site.urls), 
-    path("card/", include("card.urls")),
+    # path("card/", include("card.urls")),
     path('api/', include("api.v1.urls")),
     path("events/", include("django_eventstream.urls"))]

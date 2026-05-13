@@ -139,16 +139,16 @@ class LoginAPIView(APIView):
             
             res.set_cookie(key="access_token",
             value=access_token,
-            httponly=False,
+            httponly=True, # false for dev
             secure=False,
             samesite='Lax',
             path='/',
             domain=None)
             res.set_cookie(key="refresh_token",
             value=refresh_token,
-            httponly=False,
+            httponly=True, # false for dev
             secure=False,
-            samesite='Lax',
+            samesite='Lax', # "Lax" for dev
             path='/',
             domain=None)
             
@@ -223,9 +223,9 @@ class RefreshTokenObtain(APIView):
         response.set_cookie(
             "access_token", 
             access_token, 
-            httponly=False,
+            httponly=True, # False for dev
             secure=False,
-            samesite='Lax',
+            samesite='Lax', # "Lax" for dev
             domain=None)
         return response
 

@@ -1,0 +1,13 @@
+.venv
+__pycache__
+*.pyc
+.git
+.env
+node_modules
+.mypy_cache
+.ruff_cache
+
+/backend/db_data
+/backend/todo
+/backend/init_data.json
+important.txt
